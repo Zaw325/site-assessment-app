@@ -36,7 +36,24 @@
         DollarSign: () => <Icon><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></Icon>
     };
     // --- (UNCHANGED) Utility Components ---
-    const FormattedNote = ({ text }) => { /* (No Change) */ };
+    const FormattedNote = ({ text }) => {
+    if (!text) return null;
+    const parts = text.split(/(\*[^*]+\*|#[^#]+#)/g);
+    return (
+        <div className="formatted-note-view text-sm font-mono bg-white">
+            {parts.map((part, index) => {
+                if (part.startsWith('*') && part.endsWith('*')) {
+                    return <span key={index} className="text-yellow-custom">{part.slice(1, -1)}</span>;
+                } else if (part.startsWith('#') && part.endsWith('#')) {
+                    return <span key={index} className="text-red-custom">{part.slice(1, -1)}</span>;
+                } else {
+                    return <span key={index}>{part}</span>;
+                }
+            })}
+        </div>
+    );
+};
+
     const Card = ({ children, className = "" }) => ( <div className={`bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4 ${className}`}>{children}</div> );
     const CardHeader = ({ title, icon, rightElement }) => ( <div className="bg-primaryLight px-4 py-3 border-b border-teal-100 flex items-center justify-between"> <div className="flex items-center gap-2"> <span className="text-primary">{icon}</span> <h3 className="font-bold text-primaryDark tracking-wide text-sm uppercase">{title}</h3> </div> {rightElement} </div> );
     const SectionTitle = ({ title }) => ( <div className="flex items-center gap-2 mt-8 mb-3 px-1"> <div className="h-px bg-slate-300 flex-1"></div> <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">{title}</h4> <div className="h-px bg-slate-300 flex-1"></div> </div> );
@@ -658,3 +675,4 @@
     };
     
 </script>
+
