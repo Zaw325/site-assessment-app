@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Site Assessment App V15 (Supplies)</title>
 
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#0d9488">
+    <link rel="icon" href="icon-192.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -298,14 +300,13 @@
             }
         }
 
-        // --- (Main App Component - V17 MODIFIED) ---
+        // --- (Main App Component - V17) ---
         function App() {
 
-            // Data Migration Script (Ensures new service fields are added)
+            // Data Migration Script
             const migrateState = (loadedState) => {
                 try {
                     let migrationNeeded = false;
-                    // Check for curtain data structure change
                     if (loadedState.rooms && loadedState.rooms.length > 0 && loadedState.rooms[0].curtains && !Array.isArray(loadedState.rooms[0].curtains.Blackout)) {
                         console.warn("MIGRATING state from v15 (object) to v16 (array)...");
                         migrationNeeded = true;
@@ -323,16 +324,15 @@
                         loadedState.rooms = newRooms;
                     }
 
-                    // Check for new service fields (from V16)
-                    if (!loadedState.services.rollerBlinds) {
+                    if (loadedState.services && !loadedState.services.rollerBlinds) {
                         loadedState.services.rollerBlinds = '';
                         migrationNeeded = true;
                     }
-                    if (!loadedState.services.mosquitoNets) {
+                    if (loadedState.services && !loadedState.services.mosquitoNets) {
                         loadedState.services.mosquitoNets = '';
                         migrationNeeded = true;
                     }
-                    if (!loadedState.services.balconies) {
+                    if (loadedState.services && !loadedState.services.balconies) {
                         loadedState.services.balconies = '';
                         migrationNeeded = true;
                     }
@@ -350,11 +350,9 @@
             const [priceList, setPriceList] = useState(() => loadState(PRICE_KEY, defaultPrices));
             
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-            // *** NEW (V17): Separated state for totals ***
-            const [totalAmount, setTotalAmount] = useState(0); // Grand Total
-            const [cleaningAmount, setCleaningAmount] = useState(0); // Cleaning Total
-            const [curtainAmount, setCurtainAmount] = useState(0); // Curtain-only Total
+            const [totalAmount, setTotalAmount] = useState(0); 
+            const [cleaningAmount, setCleaningAmount] = useState(0); 
+            const [curtainAmount, setCurtainAmount] = useState(0); 
 
             // Auto-Save Data (No Change)
             useEffect(() => {
@@ -370,12 +368,11 @@
                 localStorage.setItem(PRICE_KEY, JSON.stringify(priceList));
             }, [priceList]);
 
-            // *** MODIFIED (V17): Calculation Logic ***
+            // Calculation Logic (V17)
             useEffect(() => {
                 let curtainTotal = 0;
                 const prices = priceList;
 
-                // 1. Calculate Curtain Total
                 state.rooms.forEach(room => {
                     Object.entries(room.curtains).forEach(([type, data]) => {
                         if (Array.isArray(data)) { 
@@ -406,16 +403,14 @@
                     });
                 });
 
-                // 2. Calculate Cleaning Total
                 const cleaners = parseFloat(state.services.neededCleaners) || 0;
                 const pricePer = parseFloat(prices.pricePerCleaner) || 0;
                 const suppliesPrice = parseFloat(prices.cleaningSuppliesPrice) || 0; 
                 const newCleaningTotal = (cleaners * pricePer) + suppliesPrice;
                 
-                // 3. Set all three states
-                setCurtainAmount(curtainTotal); // <-- NEW
+                setCurtainAmount(curtainTotal);
                 setCleaningAmount(newCleaningTotal); 
-                setTotalAmount(curtainTotal + newCleaningTotal); // Grand total
+                setTotalAmount(curtainTotal + newCleaningTotal);
                 
             }, [state.rooms, state.services.neededCleaners, priceList]);
 
@@ -522,7 +517,7 @@
                             </button>
                         </div>
 
-                        {/* --- (Quotation Card - *** MODIFIED V17 ***) --- */}
+                        {/* --- (Quotation Card - V17) --- */}
                         <SectionTitle title="Quotation" />
                         <Card className="bg-gradient-to-br from-white to-slate-50 border-primary/20 page-break shadow-md">
                             <CardHeader title="Summary" icon={<Icons.Calculator />} />
@@ -532,27 +527,24 @@
                                     <span className="text-3xl font-bold text-slate-700">{totalPieces} <span className="text-sm font-normal text-slate-400">pcs</span></span>
                                 </div>
 
-                                {/* **** NEW (V17) ****: Curtain Price */}
                                 <div className="mb-4">
                                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Curtains Price ($)</label>
                                     <input 
                                         type="text" 
                                         placeholder="0.00" 
-                                        value={curtainAmount.toFixed(2)} /* Display CURTAIN total */
+                                        value={curtainAmount.toFixed(2)}
                                         readOnly 
                                         disabled
                                         className="w-full text-right text-2xl font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2" 
                                     />
                                 </div>
-                                {/* **** END NEW **** */}
 
-                                {/* **** MODIFIED (V17) ****: Grand Total */}
                                 <div className="bg-primaryLight p-4 rounded-xl border border-primary/20">
                                     <label className="block text-xs font-bold text-primaryDark uppercase mb-1">Grand Total Amount ($)</label>
                                     <input 
                                         type="text" 
                                         placeholder="0.00" 
-                                        value={totalAmount.toFixed(2)} /* Display GRAND total */
+                                        value={totalAmount.toFixed(2)}
                                         readOnly 
                                         className="w-full text-right text-3xl font-bold text-primary bg-transparent outline-none placeholder-teal-200/50" 
                                     />
@@ -606,7 +598,6 @@
                                             placeholder="e.g. 1.5"
                                         />
                                         <div>
-                                            {/* This value is now calculated, but also shown here for clarity */}
                                             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Est. Cleaning Amount</label>
                                             <input 
                                                 type="text" 
