@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Assessment App V15 (Supplies)</title>
+    <title>Site Assessment App V19 (Tabs)</title>
 
-    <meta name="theme-color" content="#0d9488">
-    <link rel="icon" href="icon-192.png" type="image/png">
-    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -28,6 +26,8 @@
         body { font-family: 'Inter', sans-serif; }
         .text-yellow-custom { color: #d97706; font-weight: bold; background: #fef3c7; padding: 0 4px; border-radius: 2px; } 
         .text-red-custom { color: #dc2626; font-weight: bold; background: #fee2e2; padding: 0 4px; border-radius: 2px; }
+        
+        /* --- PRINT STYLES (The Magic Part) --- */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding-bottom: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -37,7 +37,13 @@
             textarea { display: none !important; }
             .formatted-note-view { display: block !important; border: 1px solid #cbd5e1; padding: 12px; min-height: 150px; border-radius: 6px; white-space: pre-wrap; }
             dialog { display: none !important; }
+            
+            /* CRITICAL: Force all tabs to show when printing */
+            .tab-content { display: block !important; }
+            /* Hide the tab navigation bar when printing */
+            .tab-nav-bar { display: none !important; }
         }
+        
         .formatted-note-view { display: none; } 
         dialog { border: none; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 0; }
         dialog::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
@@ -68,7 +74,7 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            const CORRECT_PASSWORD = 'clean'; // Password is 'clean'
+            const CORRECT_PASSWORD = 'clean'; 
             const loginOverlay = document.getElementById('login-overlay');
             const loginBox = loginOverlay.querySelector('div');
             const appContainer = document.getElementById('app-container');
@@ -115,11 +121,9 @@
     
     <script type="text/babel">
         
-        // --- (NEW V17 REACT APP CODE) ---
         const { useState, useEffect, useReducer, useCallback, useMemo } = React;
 
-        // --- (Utility Functions & Components) ---
-        
+        // --- Utility Functions & Components ---
         const pleatTypes = ['Blackout', 'Day', 'Night'];
         const DATA_KEY = 'siteAssessmentData_v15';
         const PRICE_KEY = 'siteAssessmentPrices_v15';
@@ -149,10 +153,12 @@
             X: () => <Icon><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></Icon>,
             Settings: () => <Icon><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>,
             DollarSign: () => <Icon><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></Icon>,
-            MapPin: () => <Icon className="w-4 h-4"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></Icon>
+            MapPin: () => <Icon className="w-4 h-4"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></Icon>,
+            Hammer: () => <Icon><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></Icon>,
+            Layers: () => <Icon><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></Icon>
         };
 
-        const FormattedNote = ({ text }) => { /* (No Change) */
+        const FormattedNote = ({ text }) => {
             if (!text) return null;
             const parts = text.split(/(\*[^*]+\*|#[^#]+#)/g);
             return (
@@ -173,8 +179,8 @@
         const Card = ({ children, className = "" }) => (
             <div className={`bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4 ${className}`}>{children}</div>
         );
-        const CardHeader = ({ title, icon, rightElement }) => (
-            <div className="bg-primaryLight px-4 py-3 border-b border-teal-100 flex items-center justify-between">
+        const CardHeader = ({ title, icon, rightElement, onClick, className="" }) => (
+            <div onClick={onClick} className={`bg-primaryLight px-4 py-3 border-b border-teal-100 flex items-center justify-between ${className}`}>
                 <div className="flex items-center gap-2">
                     <span className="text-primary">{icon}</span>
                     <h3 className="font-bold text-primaryDark tracking-wide text-sm uppercase">{title}</h3>
@@ -204,15 +210,21 @@
             </div>
         );
 
-        // --- (Data State Management - V16) ---
-        
+        const TabButton = ({ label, icon, isActive, onClick }) => (
+            <button 
+                onClick={onClick}
+                className={`flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1 text-xs font-bold uppercase tracking-wide transition-all border-b-2 ${isActive ? 'border-primary text-primary bg-primaryLight' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}
+            >
+                {icon}
+                <span>{label}</span>
+            </button>
+        );
+
+        // --- Data State ---
         const curtainTypes = ['Blackout', 'Day', 'Night', 'Roman Blinds', 'Belts'];
-        
         const createEmptyCurtains = () => {
             const newCurtains = {};
-            pleatTypes.forEach(type => {
-                newCurtains[type] = [ { id: Date.now(), pleats: '', qty: 0 } ]; 
-            });
+            pleatTypes.forEach(type => { newCurtains[type] = [ { id: Date.now(), pleats: '', qty: 0 } ]; });
             newCurtains['Roman Blinds'] = { pleats: '', qty: 0, romanDims: { length: '', height: '', unit: 'cm' } };
             newCurtains['Belts'] = { pleats: '', qty: 0 };
             return newCurtains;
@@ -223,7 +235,8 @@
             services: { 
                 windows: '', kitchenCondition: '', bedroomsCount: '', bathroomsCount: '', cupboards: '', 
                 rollerBlinds: '', mosquitoNets: '', balconies: '',
-                others: '', neededCleaners: '' 
+                others: '', neededCleaners: '',
+                patchHoles: '', handymanNotes: '' 
             },
             rooms: [
                 { id: 1, name: 'Living Rm', curtains: createEmptyCurtains() },
@@ -233,21 +246,9 @@
             ]
         };
         
-        const defaultPrices = {
-            Blackout: '1', Day: '1', Night: '1', 'Roman Blinds': '15', Belts: '2', 
-            pricePerCleaner: '50', cleaningSuppliesPrice: '0'
-        };
-        const PRICE_UNITS = {
-            'Blackout': '(per pleat)',
-            'Day': '(per pleat)',
-            'Night': '(per pleat)',
-            'Roman Blinds': '(per sq/m)',
-            'Belts': '(per piece)',
-            'pricePerCleaner': '(per cleaner)',
-            'cleaningSuppliesPrice': '(fixed fee)'
-        };
+        const defaultPrices = { Blackout: '1', Day: '1', Night: '1', 'Roman Blinds': '15', Belts: '2', pricePerCleaner: '50', cleaningSuppliesPrice: '0' };
+        const PRICE_UNITS = { 'Blackout': '(per pleat)', 'Day': '(per pleat)', 'Night': '(per pleat)', 'Roman Blinds': '(per sq/m)', 'Belts': '(per piece)', 'pricePerCleaner': '(per cleaner)', 'cleaningSuppliesPrice': '(fixed fee)' };
 
-        // Reducer (No change)
         function appReducer(state, action) {
             switch (action.type) {
                 case 'SET_CUSTOMER': return { ...state, customer: { ...state.customer, ...action.payload } };
@@ -255,60 +256,25 @@
                 case 'ADD_ROOM': return { ...state, rooms: [...state.rooms, { id: Date.now(), name: action.payload, curtains: createEmptyCurtains() }] };
                 case 'DELETE_ROOM': return { ...state, rooms: state.rooms.filter(r => r.id !== action.payload) };
                 case 'UPDATE_SINGLE_CURTAIN_DATA': 
-                    return { ...state, rooms: state.rooms.map(room => 
-                        room.id === action.payload.id ? 
-                        { ...room, curtains: { ...room.curtains, [action.payload.type]: action.payload.newData } } 
-                        : room
-                    )};
+                    return { ...state, rooms: state.rooms.map(room => room.id === action.payload.id ? { ...room, curtains: { ...room.curtains, [action.payload.type]: action.payload.newData } } : room )};
                 case 'ADD_PLEAT_ITEM':
-                    return { ...state, rooms: state.rooms.map(room => 
-                        room.id === action.payload.roomId ? {
-                            ...room,
-                            curtains: {
-                                ...room.curtains,
-                                [action.payload.type]: [
-                                    ...room.curtains[action.payload.type],
-                                    { id: Date.now(), pleats: '', qty: 0 } 
-                                ]
-                            }
-                        } : room
-                    )};
+                    return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: [ ...room.curtains[action.payload.type], { id: Date.now(), pleats: '', qty: 0 } ] } } : room )};
                 case 'DELETE_PLEAT_ITEM':
-                    return { ...state, rooms: state.rooms.map(room => 
-                        room.id === action.payload.roomId ? {
-                            ...room,
-                            curtains: {
-                                ...room.curtains,
-                                [action.payload.type]: room.curtains[action.payload.type].filter(item => item.id !== action.payload.itemId)
-                            }
-                        } : room
-                    )};
+                    return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: room.curtains[action.payload.type].filter(item => item.id !== action.payload.itemId) } } : room )};
                 case 'UPDATE_PLEAT_ITEM':
-                    return { ...state, rooms: state.rooms.map(room => 
-                        room.id === action.payload.roomId ? {
-                            ...room,
-                            curtains: {
-                                ...room.curtains,
-                                [action.payload.type]: room.curtains[action.payload.type].map(item => 
-                                    item.id === action.payload.itemId ? action.payload.newData : item
-                                )
-                            }
-                        } : room
-                    )};
+                    return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: room.curtains[action.payload.type].map(item => item.id === action.payload.itemId ? action.payload.newData : item ) } } : room )};
                 case 'RESET': return defaultState;
                 default: return state;
             }
         }
 
-        // --- (Main App Component - V17) ---
+        // --- Main App Component ---
         function App() {
 
-            // Data Migration Script
             const migrateState = (loadedState) => {
                 try {
                     let migrationNeeded = false;
                     if (loadedState.rooms && loadedState.rooms.length > 0 && loadedState.rooms[0].curtains && !Array.isArray(loadedState.rooms[0].curtains.Blackout)) {
-                        console.warn("MIGRATING state from v15 (object) to v16 (array)...");
                         migrationNeeded = true;
                         const newRooms = loadedState.rooms.map(room => {
                             const newCurtains = { ...room.curtains };
@@ -323,174 +289,103 @@
                         });
                         loadedState.rooms = newRooms;
                     }
-
-                    if (loadedState.services && !loadedState.services.rollerBlinds) {
-                        loadedState.services.rollerBlinds = '';
+                    if (loadedState.services.patchHoles === undefined) {
+                        loadedState.services.patchHoles = ''; loadedState.services.handymanNotes = '';
                         migrationNeeded = true;
                     }
-                    if (loadedState.services && !loadedState.services.mosquitoNets) {
-                        loadedState.services.mosquitoNets = '';
-                        migrationNeeded = true;
-                    }
-                    if (loadedState.services && !loadedState.services.balconies) {
-                        loadedState.services.balconies = '';
-                        migrationNeeded = true;
-                    }
-
                     if (migrationNeeded) console.log("Migration complete.");
-                    
-                } catch (e) {
-                    console.error("Migration failed, loading default state.", e);
-                    return defaultState;
-                }
+                } catch (e) { return defaultState; }
                 return loadedState;
             };
 
             const [state, dispatch] = useReducer(appReducer, loadState(DATA_KEY, defaultState), migrateState);
             const [priceList, setPriceList] = useState(() => loadState(PRICE_KEY, defaultPrices));
-            
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+            
+            // --- NEW TAB STATE ---
+            const [activeTab, setActiveTab] = useState('curtains'); // curtains, cleaning, handyman, summary
+
             const [totalAmount, setTotalAmount] = useState(0); 
             const [cleaningAmount, setCleaningAmount] = useState(0); 
             const [curtainAmount, setCurtainAmount] = useState(0); 
 
-            // Auto-Save Data (No Change)
-            useEffect(() => {
-                const handler = setTimeout(() => {
-                    localStorage.setItem(DATA_KEY, JSON.stringify(state));
-                    console.log("Auto-saved data.");
-                }, 3000); 
-                return () => clearTimeout(handler);
-            }, [state]);
+            useEffect(() => { const handler = setTimeout(() => { localStorage.setItem(DATA_KEY, JSON.stringify(state)); }, 3000); return () => clearTimeout(handler); }, [state]);
+            useEffect(() => { localStorage.setItem(PRICE_KEY, JSON.stringify(priceList)); }, [priceList]);
 
-            // Auto-Save Prices (No Change)
-            useEffect(() => {
-                localStorage.setItem(PRICE_KEY, JSON.stringify(priceList));
-            }, [priceList]);
-
-            // Calculation Logic (V17)
             useEffect(() => {
                 let curtainTotal = 0;
                 const prices = priceList;
-
                 state.rooms.forEach(room => {
                     Object.entries(room.curtains).forEach(([type, data]) => {
                         if (Array.isArray(data)) { 
                             data.forEach(item => {
-                                const qty = parseInt(item.qty) || 0;
-                                if (qty === 0) return;
-                                const price = parseFloat(prices[type]) || 0;
-                                const pleats = parseInt(item.pleats) || 0;
+                                const qty = parseInt(item.qty) || 0; if (qty === 0) return;
+                                const price = parseFloat(prices[type]) || 0; const pleats = parseInt(item.pleats) || 0;
                                 curtainTotal += pleats * qty * price;
                             });
                         } else { 
-                            const item = data;
-                            const qty = parseInt(item.qty) || 0;
-                            if (qty === 0) return;
+                            const item = data; const qty = parseInt(item.qty) || 0; if (qty === 0) return;
                             const price = parseFloat(prices[type]) || 0;
-
                             if (type === 'Roman Blinds') {
-                                const dims = item.romanDims || {};
-                                let length = parseFloat(dims.length) || 0;
-                                let height = parseFloat(dims.height) || 0;
+                                const dims = item.romanDims || {}; let length = parseFloat(dims.length) || 0; let height = parseFloat(dims.height) || 0;
                                 if (dims.unit === 'cm') { length = length / 100; height = height / 100; }
-                                const area = length * height;
-                                curtainTotal += area * price * qty;
-                            } else if (type === 'Belts') {
-                                curtainTotal += qty * price;
-                            }
+                                curtainTotal += (length * height) * price * qty;
+                            } else if (type === 'Belts') { curtainTotal += qty * price; }
                         }
                     });
                 });
-
                 const cleaners = parseFloat(state.services.neededCleaners) || 0;
                 const pricePer = parseFloat(prices.pricePerCleaner) || 0;
                 const suppliesPrice = parseFloat(prices.cleaningSuppliesPrice) || 0; 
                 const newCleaningTotal = (cleaners * pricePer) + suppliesPrice;
-                
-                setCurtainAmount(curtainTotal);
-                setCleaningAmount(newCleaningTotal); 
-                setTotalAmount(curtainTotal + newCleaningTotal);
-                
+                setCurtainAmount(curtainTotal); setCleaningAmount(newCleaningTotal); setTotalAmount(curtainTotal + newCleaningTotal); 
             }, [state.rooms, state.services.neededCleaners, priceList]);
 
             const handlePrint = () => window.print();
             const handleReset = () => {
                 if(confirm("Reset Form? This will clear all data and prices.")) {
-                    dispatch({ type: 'RESET' });
-                    setPriceList(defaultPrices);
-                    localStorage.removeItem(DATA_KEY);
-                    localStorage.removeItem(PRICE_KEY);
+                    dispatch({ type: 'RESET' }); setPriceList(defaultPrices);
+                    localStorage.removeItem(DATA_KEY); localStorage.removeItem(PRICE_KEY);
                     window.location.reload(); 
                 }
             };
             
-            // Total Pieces Calculation (No Change)
             const totalPieces = useMemo(() => 
-                state.rooms.reduce((total, room) => 
-                    total + Object.values(room.curtains).reduce((sum, data) => {
-                        if (Array.isArray(data)) {
-                            return sum + data.reduce((arrSum, item) => arrSum + (parseInt(item.qty) || 0), 0);
-                        } else {
-                            return sum + (parseInt(data?.qty) || 0);
-                        }
-                    }, 0)
-                , 0)
-            , [state.rooms]);
+                state.rooms.reduce((total, room) => total + Object.values(room.curtains).reduce((sum, data) => {
+                    if (Array.isArray(data)) { return sum + data.reduce((arrSum, item) => arrSum + (parseInt(item.qty) || 0), 0); } 
+                    else { return sum + (parseInt(data?.qty) || 0); }
+                }, 0), 0), [state.rooms]);
 
             return (
                 <div className="min-h-screen pb-24 bg-slate-50">
-                    {/* --- (Navigation Bar) (No Change) --- */}
                     <nav className="bg-primary text-white px-4 py-3 shadow-lg sticky top-0 z-50 no-print backdrop-blur-sm bg-opacity-95">
                         <div className="max-w-md mx-auto flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <div className="p-1.5 bg-white/20 rounded-lg"><Icons.CheckSquare /></div>
-                                <span className="font-bold tracking-wide">SiteCheck V15</span>
+                                <span className="font-bold tracking-wide">SiteCheck V19</span>
                             </div>
                             <div className="flex gap-3">
-                                <button onClick={() => setIsSettingsOpen(true)} className="p-2 text-primaryLight hover:text-white hover:bg-white/10 rounded-full transition-all" title="Settings">
-                                    <Icons.Settings />
-                                </button>
+                                <button onClick={() => setIsSettingsOpen(true)} className="p-2 text-primaryLight hover:text-white hover:bg-white/10 rounded-full transition-all" title="Settings"><Icons.Settings /></button>
                                 <button onClick={handleReset} className="p-2 text-primaryLight hover:text-white hover:bg-white/10 rounded-full transition-all" title="Reset Form"><Icons.Trash2 /></button>
                                 <button onClick={handlePrint} className="p-2 bg-white text-primary rounded-full shadow-md hover:bg-primaryLight transition-all" title="Save/Print"><Icons.Save /></button>
                             </div>
                         </div>
                     </nav>
 
-                    {/* --- (Main App Body) --- */}
                     <main className="max-w-md mx-auto p-4 print:max-w-none print:p-0">
                         
-                        {/* --- (Client Details Card - V16) --- */}
+                        {/* Client Details (Always Visible) */}
                         <Card className="page-break border-t-4 border-t-primary">
                             <CardHeader title="Client Details" icon={<Icons.User />} />
                             <div className="p-5 space-y-4">
                                 <InputGroup label="Name" value={state.customer.name} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { name: e.target.value }})} placeholder="Full Name" />
-                                
                                 <div className="mb-3">
                                     <div className="flex justify-between items-center mb-1">
                                         <label className="block text-xs font-bold text-slate-500 uppercase">Address</label>
-                                        <button
-                                            onClick={() => {
-                                                if (state.customer.address) {
-                                                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(state.customer.address)}`, '_blank');
-                                                }
-                                            }}
-                                            disabled={!state.customer.address}
-                                            className="flex items-center gap-1 text-xs text-primary font-bold disabled:opacity-50 no-print"
-                                        >
-                                            <Icons.MapPin />
-                                            <span className="pt-px">Open Map</span>
-                                        </button>
+                                        <button onClick={() => state.customer.address && window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(state.customer.address)}`, '_blank')} disabled={!state.customer.address} className="flex items-center gap-1 text-xs text-primary font-bold disabled:opacity-50 no-print"><Icons.MapPin /><span className="pt-px">Open Map</span></button>
                                     </div>
-                                    <input
-                                        type="text"
-                                        value={state.customer.address}
-                                        onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { address: e.target.value }})}
-                                        placeholder="Unit, Street, Building"
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition-shadow"
-                                    />
+                                    <input type="text" value={state.customer.address} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { address: e.target.value }})} placeholder="Unit, Street, Building" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition-shadow" />
                                 </div>
-
                                 <div className="grid grid-cols-2 gap-4">
                                     <InputGroup label="Contact" value={state.customer.contact} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { contact: e.target.value }})} type="tel" />
                                     <InputGroup label="Email" value={state.customer.email} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { email: e.target.value }})} type="email" />
@@ -505,415 +400,208 @@
                             </div>
                         </Card>
 
-                        {/* --- (Room Assessment Section) (No Change) --- */}
-                        <SectionTitle title="Room Assessment" />
-                        <div className="space-y-5">
-                            {state.rooms.map((room) => (
-                                <RoomCard key={room.id} room={room} dispatch={dispatch} />
-                            ))}
-                            <button onClick={() => { const name = prompt("Enter Room Name:"); if (name) dispatch({ type: 'ADD_ROOM', payload: name }); }}
-                                className="w-full py-4 border-2 border-dashed border-primary/40 text-primary rounded-xl flex items-center justify-center gap-2 hover:bg-primaryLight hover:border-primary transition-all no-print font-bold uppercase tracking-wide text-sm">
-                                <Icons.Plus /> Add New Room
-                            </button>
+                        {/* --- TAB NAVIGATION BAR (New) --- */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 flex overflow-hidden mb-5 tab-nav-bar">
+                            <TabButton label="Curtains" icon={<Icons.Layers />} isActive={activeTab === 'curtains'} onClick={() => setActiveTab('curtains')} />
+                            <TabButton label="Cleaning" icon={<Icons.AppWindow />} isActive={activeTab === 'cleaning'} onClick={() => setActiveTab('cleaning')} />
+                            <TabButton label="Handyman" icon={<Icons.Hammer />} isActive={activeTab === 'handyman'} onClick={() => setActiveTab('handyman')} />
+                            <TabButton label="Summary" icon={<Icons.Calculator />} isActive={activeTab === 'summary'} onClick={() => setActiveTab('summary')} />
                         </div>
 
-                        {/* --- (Quotation Card - V17) --- */}
-                        <SectionTitle title="Quotation" />
-                        <Card className="bg-gradient-to-br from-white to-slate-50 border-primary/20 page-break shadow-md">
-                            <CardHeader title="Summary" icon={<Icons.Calculator />} />
-                            <div className="p-5">
-                                <div className="flex justify-between items-center mb-6 pb-6 border-b border-slate-200">
-                                    <span className="font-bold text-slate-500 uppercase text-xs tracking-wider">Total Curtain Qty</span>
-                                    <span className="text-3xl font-bold text-slate-700">{totalPieces} <span className="text-sm font-normal text-slate-400">pcs</span></span>
-                                </div>
+                        {/* --- TAB CONTENT SECTIONS --- 
+                            Logic: Use className to toggle display on screen, but allow PRINT styles to force display:block 
+                        */}
 
-                                <div className="mb-4">
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Curtains Price ($)</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="0.00" 
-                                        value={curtainAmount.toFixed(2)}
-                                        readOnly 
-                                        disabled
-                                        className="w-full text-right text-2xl font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2" 
-                                    />
-                                </div>
-
-                                <div className="bg-primaryLight p-4 rounded-xl border border-primary/20">
-                                    <label className="block text-xs font-bold text-primaryDark uppercase mb-1">Grand Total Amount ($)</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="0.00" 
-                                        value={totalAmount.toFixed(2)}
-                                        readOnly 
-                                        className="w-full text-right text-3xl font-bold text-primary bg-transparent outline-none placeholder-teal-200/50" 
-                                    />
-                                </div>
+                        {/* 1. CURTAINS SECTION */}
+                        <div className={`tab-content ${activeTab === 'curtains' ? 'block' : 'hidden'}`}>
+                            <SectionTitle title="Room Assessment" />
+                            <div className="space-y-5">
+                                {state.rooms.map((room) => (
+                                    <RoomCard key={room.id} room={room} dispatch={dispatch} />
+                                ))}
+                                <button onClick={() => { const name = prompt("Enter Room Name:"); if (name) dispatch({ type: 'ADD_ROOM', payload: name }); }}
+                                    className="w-full py-4 border-2 border-dashed border-primary/40 text-primary rounded-xl flex items-center justify-center gap-2 hover:bg-primaryLight hover:border-primary transition-all no-print font-bold uppercase tracking-wide text-sm">
+                                    <Icons.Plus /> Add New Room
+                                </button>
                             </div>
-                        </Card>
+                        </div>
 
-                        {/* --- (Site Condition Card - V16) --- */}
-                        <SectionTitle title="Additional Info" />
-                        <Card className="page-break">
-                            <CardHeader title="Site Condition" icon={<Icons.AppWindow />} />
-                            <div className="p-5 space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <InputGroup label="No. of Windows" type="number" value={state.services.windows} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { windows: e.target.value }})} />
-                                    <InputGroup label="Kitchen Condition" value={state.services.kitchenCondition} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { kitchenCondition: e.target.value }})} />
-                                    <InputGroup label="Bedrooms" type="number" value={state.services.bedroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bedroomsCount: e.target.value }})} />
-                                    <InputGroup label="Bathrooms" type="number" value={state.services.bathroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bathroomsCount: e.target.value }})} />
-                                </div>
-                                <InputGroup label="Cupboards & Shelves" value={state.services.cupboards} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { cupboards: e.target.value }})} />
-                                
-                                <InputGroup 
-                                    label="Roller Blinds" 
-                                    type="text" 
-                                    value={state.services.rollerBlinds} 
-                                    onChange={e => dispatch({ type: 'SET_SERVICES', payload: { rollerBlinds: e.target.value }})} 
-                                    placeholder="e.g. 2 pcs, dusty"
-                                />
-                                <div className="grid grid-cols-2 gap-4">
-                                    <InputGroup 
-                                        label="Mosquito-nets" 
-                                        type="number"
-                                        value={state.services.mosquitoNets} 
-                                        onChange={e => dispatch({ type: 'SET_SERVICES', payload: { mosquitoNets: e.target.value }})} 
-                                    />
-                                    <InputGroup 
-                                        label="Balconies" 
-                                        type="number"
-                                        value={state.services.balconies} 
-                                        onChange={e => dispatch({ type: 'SET_SERVICES', payload: { balconies: e.target.value }})} 
-                                    />
-                                </div>
-
-                                <div className="pt-4 border-t border-slate-200 mt-2">
+                        {/* 2. CLEANING SECTION */}
+                        <div className={`tab-content ${activeTab === 'cleaning' ? 'block' : 'hidden'}`}>
+                            <SectionTitle title="Additional Info" />
+                            <Card className="page-break">
+                                <CardHeader title="Site Condition" icon={<Icons.AppWindow />} />
+                                <div className="p-5 space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
-                                        <InputGroup 
-                                            label="Needed Cleaners" 
-                                            type="number" 
-                                            step="0.5"
-                                            value={state.services.neededCleaners} 
-                                            onChange={e => dispatch({ type: 'SET_SERVICES', payload: { neededCleaners: e.target.value }})} 
-                                            placeholder="e.g. 1.5"
-                                        />
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Est. Cleaning Amount</label>
-                                            <input 
-                                                type="text" 
-                                                value={`$${cleaningAmount.toFixed(2)}`} 
-                                                readOnly 
-                                                disabled
-                                                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-100 text-slate-500 font-bold"
-                                            />
+                                        <InputGroup label="No. of Windows" type="number" value={state.services.windows} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { windows: e.target.value }})} />
+                                        <InputGroup label="Kitchen Condition" value={state.services.kitchenCondition} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { kitchenCondition: e.target.value }})} />
+                                        <InputGroup label="Bedrooms" type="number" value={state.services.bedroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bedroomsCount: e.target.value }})} />
+                                        <InputGroup label="Bathrooms" type="number" value={state.services.bathroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bathroomsCount: e.target.value }})} />
+                                    </div>
+                                    <InputGroup label="Cupboards & Shelves" value={state.services.cupboards} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { cupboards: e.target.value }})} />
+                                    <InputGroup label="Roller Blinds" type="text" value={state.services.rollerBlinds} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { rollerBlinds: e.target.value }})} placeholder="e.g. 2 pcs, dusty" />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <InputGroup label="Mosquito-nets" type="number" value={state.services.mosquitoNets} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { mosquitoNets: e.target.value }})} />
+                                        <InputGroup label="Balconies" type="number" value={state.services.balconies} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { balconies: e.target.value }})} />
+                                    </div>
+                                    <div className="pt-4 border-t border-slate-200 mt-2">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <InputGroup label="Needed Cleaners" type="number" step="0.5" value={state.services.neededCleaners} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { neededCleaners: e.target.value }})} placeholder="e.g. 1.5" />
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Est. Cleaning Amount</label>
+                                                <input type="text" value={`$${cleaningAmount.toFixed(2)}`} readOnly disabled className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-100 text-slate-500 font-bold" />
+                                            </div>
                                         </div>
                                     </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Inspector Notes <span className="ml-2 text-[10px] font-normal text-slate-400 normal-case no-print">(*yellow*, #red#)</span></label>
+                                        <textarea rows="6" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-slate-50" value={state.services.others} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { others: e.target.value }})} placeholder="Enter special requirements..."></textarea>
+                                        <FormattedNote text={state.services.others} />
+                                    </div>
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Inspector Notes <span className="ml-2 text-[10px] font-normal text-slate-400 normal-case no-print">(*yellow*, #red#)</span></label>
-                                    <textarea rows="6" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-slate-50" value={state.services.others} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { others: e.target.value }})} placeholder="Enter special requirements..."></textarea>
-                                    <FormattedNote text={state.services.others} />
-                                </div>
-                            </div>
-                        </Card>
+                            </Card>
+                        </div>
 
-                        {/* --- (Print Signature Footer) (No Change) --- */}
+                        {/* 3. HANDYMAN SECTION */}
+                        <div className={`tab-content ${activeTab === 'handyman' ? 'block' : 'hidden'}`}>
+                            <SectionTitle title="Handyman" />
+                            <Card className="page-break">
+                                <CardHeader title="Handyman Services" icon={<Icons.Hammer />} />
+                                <div className="p-5 space-y-4">
+                                    <div className="w-1/2 pr-2">
+                                         <InputGroup label="Patch Holes" value={state.services.patchHoles} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { patchHoles: e.target.value }})} placeholder="Qty / Loc" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Description / Notes</label>
+                                        <textarea rows="6" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-slate-50" value={state.services.handymanNotes} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { handymanNotes: e.target.value }})} placeholder="Describe handyman tasks..."></textarea>
+                                        <FormattedNote text={state.services.handymanNotes} />
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* 4. SUMMARY / QUOTATION SECTION (Also shown on print) */}
+                        <div className={`tab-content ${activeTab === 'summary' ? 'block' : 'hidden'}`}>
+                            <SectionTitle title="Quotation" />
+                            <Card className="bg-gradient-to-br from-white to-slate-50 border-primary/20 page-break shadow-md">
+                                <CardHeader title="Summary" icon={<Icons.Calculator />} />
+                                <div className="p-5">
+                                    <div className="flex justify-between items-center mb-6 pb-6 border-b border-slate-200">
+                                        <span className="font-bold text-slate-500 uppercase text-xs tracking-wider">Total Curtain Qty</span>
+                                        <span className="text-3xl font-bold text-slate-700">{totalPieces} <span className="text-sm font-normal text-slate-400">pcs</span></span>
+                                    </div>
+                                    <div className="mb-4">
+                                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Curtains Price ($)</label>
+                                        <input type="text" placeholder="0.00" value={curtainAmount.toFixed(2)} readOnly disabled className="w-full text-right text-2xl font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2" />
+                                    </div>
+                                    <div className="bg-primaryLight p-4 rounded-xl border border-primary/20">
+                                        <label className="block text-xs font-bold text-primaryDark uppercase mb-1">Grand Total Amount ($)</label>
+                                        <input type="text" placeholder="0.00" value={totalAmount.toFixed(2)} readOnly className="w-full text-right text-3xl font-bold text-primary bg-transparent outline-none placeholder-teal-200/50" />
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
                         <div className="hidden print:flex mt-12 pt-8 border-t-2 border-slate-200 page-break justify-between items-end">
                             <div className="text-center w-1/3"><div className="h-16 border-b border-slate-400 mb-2"></div><div className="text-xs font-bold text-slate-500 uppercase">Customer Signature</div></div>
                             <div className="text-center w-1/3"><div className="h-16 border-b border-slate-400 mb-2"></div><div className="text-xs font-bold text-slate-500 uppercase">Inspector Signature</div></div>
                         </div>
                         
-                        <div className="text-center mt-8 no-print text-slate-400 text-xs">© Site Assessment App V15</div>
+                        <div className="text-center mt-8 no-print text-slate-400 text-xs">© Site Assessment App V19</div>
                     </main>
                     
-                    {/* --- (Settings Modal) (No Change) --- */}
-                    <SettingsModal 
-                        isOpen={isSettingsOpen} 
-                        onClose={() => setIsSettingsOpen(false)}
-                        priceList={priceList}
-                        setPriceList={setPriceList}
-                    />
+                    <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} priceList={priceList} setPriceList={setPriceList} />
                 </div>
             );
         }
 
-        // --- (Child Components - V15) ---
+        // --- Child Components (Same as before) ---
 
-        // SettingsModal Component (No Change)
         function SettingsModal({ isOpen, onClose, priceList, setPriceList }) {
             const dialogRef = React.useRef(null);
-
-            useEffect(() => {
-                if (isOpen) dialogRef.current?.showModal();
-                else dialogRef.current?.close();
-            }, [isOpen]);
-
-            const handlePriceChange = (type, value) => {
-                setPriceList(prev => ({ ...prev, [type]: value }));
-            };
-
+            useEffect(() => { if (isOpen) dialogRef.current?.showModal(); else dialogRef.current?.close(); }, [isOpen]);
+            const handlePriceChange = (type, value) => { setPriceList(prev => ({ ...prev, [type]: value })); };
             return (
                 <dialog ref={dialogRef} onClose={onClose} className="w-full max-w-md p-0 no-print">
                     <div className="flex flex-col">
                         <div className="flex justify-between items-center p-4 border-b border-slate-200">
-                            <div className="flex items-center gap-2">
-                                <span className="text-primary"><Icons.DollarSign /></span>
-                                <h3 className="text-lg font-bold text-slate-800">Price List</h3>
-                            </div>
+                            <div className="flex items-center gap-2"><span className="text-primary"><Icons.DollarSign /></span><h3 className="text-lg font-bold text-slate-800">Price List</h3></div>
                             <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><Icons.X /></button>
                         </div>
                         <div className="p-6 space-y-4 bg-slate-50">
                             <p className="text-sm text-slate-600">Set default prices for auto-calculation.</p>
-                            
                             {curtainTypes.map(type => (
-                                <div key={type} className="flex items-center gap-2">
-                                    <label className="w-1/2 text-sm font-medium text-slate-700">
-                                        {type} <span className="text-xs text-slate-400 font-normal">{PRICE_UNITS[type]}</span>
-                                    </label>
-                                    <div className="relative w-1/2">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
-                                        <input 
-                                            type="number"
-                                            value={priceList[type] || ''}
-                                            onChange={(e) => handlePriceChange(type, e.target.value)}
-                                            className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                        />
-                                    </div>
-                                </div>
+                                <div key={type} className="flex items-center gap-2"><label className="w-1/2 text-sm font-medium text-slate-700">{type} <span className="text-xs text-slate-400 font-normal">{PRICE_UNITS[type]}</span></label><div className="relative w-1/2"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" value={priceList[type] || ''} onChange={(e) => handlePriceChange(type, e.target.value)} className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary" /></div></div>
                             ))}
-                            
                             <div className="pt-4 border-t border-slate-200 mt-4 space-y-4">
-                                <div className="flex items-center gap-2">
-                                    <label className="w-1/2 text-sm font-medium text-slate-700">
-                                        Cleaning Staff <span className="text-xs text-slate-400 font-normal">{PRICE_UNITS['pricePerCleaner']}</span>
-                                    </label>
-                                    <div className="relative w-1/2">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
-                                        <input 
-                                            type="number"
-                                            value={priceList['pricePerCleaner'] || ''}
-                                            onChange={(e) => handlePriceChange('pricePerCleaner', e.target.value)}
-                                            className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                    <label className="w-1/2 text-sm font-medium text-slate-700">
-                                        Cleaning Supplies <span className="text-xs text-slate-400 font-normal">{PRICE_UNITS['cleaningSuppliesPrice']}</span>
-                                    </label>
-                                    <div className="relative w-1/2">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
-                                        <input 
-                                            type="number"
-                                            value={priceList['cleaningSuppliesPrice'] || ''}
-                                            onChange={(e) => handlePriceChange('cleaningSuppliesPrice', e.target.value)}
-                                            className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                        />
-                                    </div>
-                                </div>
+                                <div className="flex items-center gap-2"><label className="w-1/2 text-sm font-medium text-slate-700">Cleaning Staff <span className="text-xs text-slate-400 font-normal">{PRICE_UNITS['pricePerCleaner']}</span></label><div className="relative w-1/2"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" value={priceList['pricePerCleaner'] || ''} onChange={(e) => handlePriceChange('pricePerCleaner', e.target.value)} className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary" /></div></div>
+                                <div className="flex items-center gap-2"><label className="w-1/2 text-sm font-medium text-slate-700">Cleaning Supplies <span className="text-xs text-slate-400 font-normal">{PRICE_UNITS['cleaningSuppliesPrice']}</span></label><div className="relative w-1/2"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" value={priceList['cleaningSuppliesPrice'] || ''} onChange={(e) => handlePriceChange('cleaningSuppliesPrice', e.target.value)} className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary" /></div></div>
                             </div>
-                            
                         </div>
-                        <div className="p-4 bg-slate-100 border-t border-slate-200 text-right">
-                            <button onClick={onClose} className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-primaryDark transition-colors">Done</button>
-                        </div>
+                        <div className="p-4 bg-slate-100 border-t border-slate-200 text-right"><button onClick={onClose} className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-primaryDark transition-colors">Done</button></div>
                     </div>
                 </dialog>
             );
         }
 
-        // RoomCard Component (No Change)
         function RoomCard({ room, dispatch }) {
-            const total = useMemo(() => 
-                Object.values(room.curtains).reduce((sum, data) => {
-                    if (Array.isArray(data)) {
-                        return sum + data.reduce((arrSum, item) => arrSum + (parseInt(item.qty) || 0), 0);
-                    } else {
-                        return sum + (parseInt(data?.qty) || 0);
-                    }
-                }, 0)
-            , [room.curtains]);
-
-            const handleDelete = () => {
-                if(confirm(`Delete room "${room.name}"?`)) {
-                    dispatch({ type: 'DELETE_ROOM', payload: room.id });
-                }
-            };
-            
-            const handleAddPleat = (type) => {
-                dispatch({ type: 'ADD_PLEAT_ITEM', payload: { roomId: room.id, type } });
-            };
-            const handleDeletePleat = (type, itemId) => {
-                dispatch({ type: 'DELETE_PLEAT_ITEM', payload: { roomId: room.id, type, itemId } });
-            };
-            const handleUpdatePleat = (type, itemId, newData) => {
-                dispatch({ type: 'UPDATE_PLEAT_ITEM', payload: { roomId: room.id, type, itemId, newData } });
-            };
-            
-            const handleUpdateSingle = (type, newData) => {
-                dispatch({ type: 'UPDATE_SINGLE_CURTAIN_DATA', payload: { id: room.id, type, newData } });
-            };
-
+            const total = useMemo(() => Object.values(room.curtains).reduce((sum, data) => { if (Array.isArray(data)) { return sum + data.reduce((arrSum, item) => arrSum + (parseInt(item.qty) || 0), 0); } else { return sum + (parseInt(data?.qty) || 0); } }, 0), [room.curtains]);
+            const handleDelete = () => { if(confirm(`Delete room "${room.name}"?`)) { dispatch({ type: 'DELETE_ROOM', payload: room.id }); } };
+            const handleAddPleat = (type) => { dispatch({ type: 'ADD_PLEAT_ITEM', payload: { roomId: room.id, type } }); };
+            const handleDeletePleat = (type, itemId) => { dispatch({ type: 'DELETE_PLEAT_ITEM', payload: { roomId: room.id, type, itemId } }); };
+            const handleUpdatePleat = (type, itemId, newData) => { dispatch({ type: 'UPDATE_PLEAT_ITEM', payload: { roomId: room.id, type, itemId, newData } }); };
+            const handleUpdateSingle = (type, newData) => { dispatch({ type: 'UPDATE_SINGLE_CURTAIN_DATA', payload: { id: room.id, type, newData } }); };
             return (
                 <Card className="page-break transition-all hover:shadow-md">
-                    <div className="bg-white px-4 py-3 border-b border-slate-100 flex justify-between items-center">
-                        <span className="font-bold text-slate-700 text-lg">{room.name}</span>
-                        <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primaryLight text-primary border border-teal-100">{total} pcs</span>
-                            <button onClick={handleDelete} className="text-slate-300 hover:text-red-500 no-print transition-colors"><Icons.X /></button>
-                        </div>
-                    </div>
+                    <div className="bg-white px-4 py-3 border-b border-slate-100 flex justify-between items-center"><span className="font-bold text-slate-700 text-lg">{room.name}</span><div className="flex items-center gap-3"><span className="text-xs font-bold px-2.5 py-1 rounded-full bg-primaryLight text-primary border border-teal-100">{total} pcs</span><button onClick={handleDelete} className="text-slate-300 hover:text-red-500 no-print transition-colors"><Icons.X /></button></div></div>
                     <div className="p-3 bg-white">
                         {curtainTypes.map((type) => {
                             const isPleatType = pleatTypes.includes(type);
-                            
                             if (isPleatType) {
                                 return (
                                     <div key={type} className="py-3 border-b border-slate-100 last:border-0">
                                         {Array.isArray(room.curtains[type]) && room.curtains[type].map((item, index) => (
-                                            <CurtainInput 
-                                                key={item.id} 
-                                                label={type} 
-                                                data={item} 
-                                                onChange={(newData) => handleUpdatePleat(type, item.id, newData)}
-                                                onDelete={() => handleDeletePleat(type, item.id)}
-                                                isPleatType={true}
-                                                showLabel={index === 0}
-                                                canDelete={room.curtains[type].length > 1}
-                                            />
+                                            <CurtainInput key={item.id} label={type} data={item} onChange={(newData) => handleUpdatePleat(type, item.id, newData)} onDelete={() => handleDeletePleat(type, item.id)} isPleatType={true} showLabel={index === 0} canDelete={room.curtains[type].length > 1} />
                                         ))}
-                                        <div className="flex justify-end mt-2 pr-12 no-print">
-                                            <button 
-                                                onClick={() => handleAddPleat(type)} 
-                                                className="flex items-center gap-1 text-xs text-primary font-bold opacity-70 hover:opacity-100"
-                                            >
-                                                <Icons.Plus /><span className="pt-px">Add {type}</span>
-                                            </button>
-                                        </div>
+                                        <div className="flex justify-end mt-2 pr-12 no-print"><button onClick={() => handleAddPleat(type)} className="flex items-center gap-1 text-xs text-primary font-bold opacity-70 hover:opacity-100"><Icons.Plus /><span className="pt-px">Add {type}</span></button></div>
                                     </div>
                                 );
-                            } else {
-                                return (
-                                    <CurtainInput 
-                                        key={type} 
-                                        label={type} 
-                                        data={room.curtains[type]} 
-                                        onChange={(newData) => handleUpdateSingle(type, newData)} 
-                                        isPleatType={false}
-                                        showLabel={true}
-                                        canDelete={false}
-                                        onDelete={() => {}}
-                                    />
-                                );
-                            }
+                            } else { return ( <CurtainInput key={type} label={type} data={room.curtains[type]} onChange={(newData) => handleUpdateSingle(type, newData)} isPleatType={false} showLabel={true} canDelete={false} onDelete={() => {}} /> ); }
                         })}
                     </div>
                 </Card>
             );
         }
 
-        // CurtainInput Component (No Change)
         function CurtainInput({ label, data, onChange, onDelete, isPleatType, showLabel, canDelete }) {
             if (!data) return null; 
-
-            const isRomanBlind = label === 'Roman Blinds';
-            const isBelt = label === 'Belts';
-
+            const isRomanBlind = label === 'Roman Blinds'; const isBelt = label === 'Belts';
             const handleQtyChange = (newQty) => onChange({ ...data, qty: Math.max(0, newQty) });
             const handlePleatChange = (e) => onChange({ ...data, pleats: e.target.value });
-            
-            const handleRomanChange = (field, val) => {
-                const currentDims = data.romanDims || { length: '', height: '', unit: 'cm' };
-                const newDims = { ...currentDims, [field]: val };
-                onChange({ ...data, romanDims: newDims });
-            };
-
+            const handleRomanChange = (field, val) => { const currentDims = data.romanDims || { length: '', height: '', unit: 'cm' }; const newDims = { ...currentDims, [field]: val }; onChange({ ...data, romanDims: newDims }); };
             const romanDims = data.romanDims || { length: '', height: '', unit: 'cm' };
-            const wrapperClass = isPleatType 
-                ? "py-1.5"
-                : "py-3 border-b border-slate-100 last:border-0";
-
+            const wrapperClass = isPleatType ? "py-1.5" : "py-3 border-b border-slate-100 last:border-0";
             return (
                 <div className={wrapperClass}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-2 w-full sm:w-1/3">
-                           {showLabel ? (
-                               <React.Fragment>
-                                   <span className={`text-sm font-medium ${isRomanBlind || isPleatType ? 'text-primaryDark font-bold' : 'text-slate-700'}`}>{label}</span>
-                                   {isRomanBlind && <span className="text-[10px] bg-teal-100 text-teal-800 px-1 rounded no-print">L x H (sq/m)</span>}
-                                   {isPleatType && <span className="text-[10px] bg-teal-100 text-teal-800 px-1 rounded no-print">Pleats</span>}
-                               </React.Fragment>
-                           ) : (
-                                <button 
-                                    onClick={onDelete} 
-                                    className={`text-slate-300 hover:text-red-500 no-print transition-colors ml-1 ${!canDelete ? 'opacity-70' : ''}`}
-                                    title="Remove item"
-                                    disabled={!canDelete}
-                                >
-                                    <Icons.X />
-                                </button>
-                           )}
+                           {showLabel ? ( <React.Fragment><span className={`text-sm font-medium ${isRomanBlind || isPleatType ? 'text-primaryDark font-bold' : 'text-slate-700'}`}>{label}</span>{isRomanBlind && <span className="text-[10px] bg-teal-100 text-teal-800 px-1 rounded no-print">L x H (sq/m)</span>}{isPleatType && <span className="text-[10px] bg-teal-100 text-teal-800 px-1 rounded no-print">Pleats</span>}</React.Fragment> ) : ( <button onClick={onDelete} className={`text-slate-300 hover:text-red-500 no-print transition-colors ml-1 ${!canDelete ? 'opacity-70' : ''}`} title="Remove item" disabled={!canDelete}><Icons.X /></button> )}
                         </div>
-                        
                         <div className="flex items-center gap-2 w-full sm:w-2/3 justify-end">
                             <div className="flex-1">
-                                {isRomanBlind && (
-                                    <div className="flex items-center gap-1">
-                                        <input type="number" value={romanDims.length} onChange={(e) => handleRomanChange('length', e.target.value)} placeholder="Len" className="w-1/3 min-w-[50px] px-1 py-1 text-center border border-slate-300 rounded text-sm focus:border-primary outline-none" />
-                                        <span className="text-slate-400 text-xs">x</span>
-                                        <input type="number" value={romanDims.height} onChange={(e) => handleRomanChange('height', e.target.value)} placeholder="Hgt" className="w-1/3 min-w-[50px] px-1 py-1 text-center border border-slate-300 rounded text-sm focus:border-primary outline-none" />
-                                        <select value={romanDims.unit} onChange={(e) => handleRomanChange('unit', e.target.value)} className="w-1/3 min-w-[50px] bg-slate-50 border border-slate-300 text-xs rounded px-1 py-1 outline-none focus:border-primary">
-                                            <option value="cm">cm</option>
-                                            <option value="m">m</option>
-                                        </select>
-                                    </div>
-                                )}
-                                {isPleatType && (
-                                    <div className="relative max-w-[120px]">
-                                        <input type="number" value={data.pleats || ''} onChange={handlePleatChange} placeholder="Pleats No." className="w-full px-2 py-1 text-center border border-slate-300 rounded text-sm focus:border-primary outline-none" />
-                                    </div>
-                                )}
-                                {isBelt && (
-                                    <div className="relative max-w-[120px]">
-                                        <input type="text" value="Per Piece" readOnly disabled className="w-full px-2 py-1 text-center border-slate-200 bg-slate-50 text-slate-400 rounded text-sm outline-none" />
-                                    </div>
-                                )}
+                                {isRomanBlind && ( <div className="flex items-center gap-1"><input type="number" value={romanDims.length} onChange={(e) => handleRomanChange('length', e.target.value)} placeholder="Len" className="w-1/3 min-w-[50px] px-1 py-1 text-center border border-slate-300 rounded text-sm focus:border-primary outline-none" /><span className="text-slate-400 text-xs">x</span><input type="number" value={romanDims.height} onChange={(e) => handleRomanChange('height', e.target.value)} placeholder="Hgt" className="w-1/3 min-w-[50px] px-1 py-1 text-center border border-slate-300 rounded text-sm focus:border-primary outline-none" /><select value={romanDims.unit} onChange={(e) => handleRomanChange('unit', e.target.value)} className="w-1/3 min-w-[50px] bg-slate-50 border border-slate-300 text-xs rounded px-1 py-1 outline-none focus:border-primary"><option value="cm">cm</option><option value="m">m</option></select></div> )}
+                                {isPleatType && ( <div className="relative max-w-[120px]"><input type="number" value={data.pleats || ''} onChange={handlePleatChange} placeholder="Pleats No." className="w-full px-2 py-1 text-center border border-slate-300 rounded text-sm focus:border-primary outline-none" /></div> )}
+                                {isBelt && ( <div className="relative max-w-[120px]"><input type="text" value="Per Piece" readOnly disabled className="w-full px-2 py-1 text-center border-slate-200 bg-slate-50 text-slate-400 rounded text-sm outline-none" /></div> )}
                             </div>
-                            
-                            <div className="flex items-center gap-1 ml-2">
-                                <button onClick={() => handleQtyChange((data.qty || 0) - 1)} className="w-7 h-7 flex items-center justify-center rounded bg-slate-100 text-slate-600 hover:bg-slate-200 active:bg-slate-300 touch-manipulation no-print shadow-sm">-</button>
-                                <div className="w-10 text-center">
-                                    <input type="number" value={data.qty || 0} onChange={(e) => handleQtyChange(parseInt(e.target.value) || 0)} className="w-full text-center py-1 border border-slate-300 rounded text-sm font-bold bg-white text-primaryDark" />
-                                </div>
-                                <button onClick={() => handleQtyChange((data.qty || 0) + 1)} className="w-7 h-7 flex items-center justify-center rounded bg-primary text-white hover:bg-primaryDark active:opacity-80 touch-manipulation no-print shadow-sm">+</button>
-                            </div>
-
-                            {isPleatType && showLabel && (
-                                <button 
-                                    onClick={onDelete} 
-                                    className={`text-slate-300 hover:text-red-500 no-print transition-colors ml-1 ${!canDelete ? 'opacity-0' : ''}`}
-                                    title="Remove item"
-                                    disabled={!canDelete}
-                                >
-                                    <Icons.X />
-                                </button>
-                            )}
+                            <div className="flex items-center gap-1 ml-2"><button onClick={() => handleQtyChange((data.qty || 0) - 1)} className="w-7 h-7 flex items-center justify-center rounded bg-slate-100 text-slate-600 hover:bg-slate-200 active:bg-slate-300 touch-manipulation no-print shadow-sm">-</button><div className="w-10 text-center"><input type="number" value={data.qty || 0} onChange={(e) => handleQtyChange(parseInt(e.target.value) || 0)} className="w-full text-center py-1 border border-slate-300 rounded text-sm font-bold bg-white text-primaryDark" /></div><button onClick={() => handleQtyChange((data.qty || 0) + 1)} className="w-7 h-7 flex items-center justify-center rounded bg-primary text-white hover:bg-primaryDark active:opacity-80 touch-manipulation no-print shadow-sm">+</button></div>
+                            {isPleatType && showLabel && ( <button onClick={onDelete} className={`text-slate-300 hover:text-red-500 no-print transition-colors ml-1 ${!canDelete ? 'opacity-0' : ''}`} title="Remove item" disabled={!canDelete}><Icons.X /></button> )}
                         </div>
                     </div>
                 </div>
             );
         };
-        
-        // --- (End of React App Code) ---
 
-        window.renderTheApp = () => {
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(<App />);
-        };
-        
+        window.renderTheApp = () => { const root = ReactDOM.createRoot(document.getElementById('root')); root.render(<App />); };
     </script>
-
 </body>
 </html>
