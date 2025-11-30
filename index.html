@@ -302,15 +302,15 @@
                     });
                 });
                 const cleaningTotal = ((parseFloat(state.services.neededCleaners)||0) * (parseFloat(priceList.pricePerCleaner)||0)) + (parseFloat(priceList.cleaningSuppliesPrice)||0);
-                const pieces = state.rooms.reduce((t, r) => t + Object.values(r.curtains).reduce((s, d) => Array.isArray(d) ? s + d.reduce((ss, i) => ss + (parseInt(i.qty)||0), 0) : s + (parseInt(d.qty)||0), 0), 0);
+                const pieces = state.rooms.reduce((t, r) => t + Object.values(r.curtains).reduce((s, d) => Array.isArray(d) ? s + d.reduce((ss, i) => ss + (parseInt(d.qty)||0), 0) : s + (parseInt(d.qty)||0), 0), 0);
                 return { curtainAmount: curtainTotal, cleaningAmount: cleaningTotal, totalAmount: curtainTotal + cleaningTotal, totalPieces: pieces };
             }, [state, priceList]);
 
             const handleReset = () => { if(confirm("Reset?")) { dispatch({ type: 'RESET' }); setPriceList(defaultPrices); showToast("All data reset", 'success'); } };
             const handlePrint = () => { showToast("Preparing Print...", 'success'); setTimeout(() => window.print(), 500); };
             const isCleaningEmpty = !state.services.kitchenCondition && !state.services.bedroomsCount && !state.services.bathroomsCount && !state.services.neededCleaners && !state.services.others;
-            const isHandymanEmpty = !state.services.patchHoles && !state.services.handymanNotes;
-            const boldLabelClass = "font-black text-primaryDark text-sm uppercase";
+            const isHandymanEmpty = (!state.services.patchHoles || state.services.patchHoles.trim() === '') && (!state.services.handymanNotes || state.services.handymanNotes.trim() === '');
+            const boldLabelClass = "font-black text-slate-800 text-sm uppercase"; 
 
             if (status === 'connecting') return <div className="flex items-center justify-center h-screen text-slate-500 flex-col gap-4"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div><p>Connecting...</p></div>;
 
@@ -373,32 +373,29 @@
                                     <div className="grid grid-cols-2 gap-4 no-print">
                                         <InputGroup labelClass={boldLabelClass} label="Bedroom" type="number" value={state.services.bedroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bedroomsCount: e.target.value }})} />
                                         <InputGroup labelClass={boldLabelClass} label="Bathroom" type="number" value={state.services.bathroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bathroomsCount: e.target.value }})} />
-                                        <InputGroup labelClass={boldLabelClass} label="Blinds" value={state.services.rollerBlinds} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { rollerBlinds: e.target.value }})} />
-                                        <InputGroup labelClass={boldLabelClass} label="Mosquito-nets" type="number" value={state.services.mosquitoNets} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { mosquitoNets: e.target.value }})} />
-                                        <InputGroup labelClass={boldLabelClass} label="Kitchen" value={state.services.kitchenCondition} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { kitchenCondition: e.target.value }})} />
                                         <InputGroup labelClass={boldLabelClass} label="Cupboards" value={state.services.cupboards} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { cupboards: e.target.value }})} />
+                                        <InputGroup labelClass={boldLabelClass} label="Blinds" value={state.services.rollerBlinds} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { rollerBlinds: e.target.value }})} />
                                         <InputGroup labelClass={boldLabelClass} label="Balconies" type="number" value={state.services.balconies} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { balconies: e.target.value }})} />
+                                        <InputGroup labelClass={boldLabelClass} label="Kitchen" value={state.services.kitchenCondition} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { kitchenCondition: e.target.value }})} />
                                     </div>
                                     <div className="print-only flex flex-col gap-1">
                                         <div className="grid grid-cols-2 gap-x-8 gap-y-1">
                                             <PrintItem label="Bedroom" value={state.services.bedroomsCount} />
                                             <PrintItem label="Bathroom" value={state.services.bathroomsCount} />
-                                            <PrintItem label="Blinds" value={state.services.rollerBlinds} />
-                                            <PrintItem label="Mosquito-nets" value={state.services.mosquitoNets} />
-                                            <PrintItem label="Kitchen" value={state.services.kitchenCondition} />
                                             <PrintItem label="Cupboards" value={state.services.cupboards} />
+                                            <PrintItem label="Blinds" value={state.services.rollerBlinds} />
                                             <PrintItem label="Balconies" value={state.services.balconies} />
+                                            <PrintItem label="Kitchen" value={state.services.kitchenCondition} />
                                         </div>
                                     </div>
                                     <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 mt-4 print:bg-transparent print:border-0 print:p-0">
                                         <div className="grid grid-cols-2 gap-4 print:block mb-4">
-                                            <div className="no-print"><InputGroup label="Cleaners" type="number" step="0.5" value={state.services.neededCleaners} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { neededCleaners: e.target.value }})} /></div>
-                                            <div className="print-only mb-4 mt-2"><div className="border-2 border-slate-200 rounded-lg p-2 flex justify-between items-center bg-slate-50"><span className="text-xs font-black text-slate-500 uppercase">Manpower</span><span className="text-sm font-black text-slate-800">{state.services.neededCleaners ? `${state.services.neededCleaners} Cleaners` : '0 Cleaners'}</span></div></div>
-                                            <div className="flex justify-between items-center border-t border-slate-300 pt-2 print:border-t print:border-slate-800"><label className="block text-xs font-black text-slate-600 uppercase">Est. Cleaning Cost</label><span className="text-lg font-bold text-slate-800">${cleaningAmount.toFixed(2)}</span></div>
+                                            <div className="no-print"><InputGroup label="Cleaners" labelClass="font-black text-slate-800 text-sm uppercase" type="number" step="0.5" value={state.services.neededCleaners} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { neededCleaners: e.target.value }})} /></div>
+                                            <div className="print-only mb-4 mt-2"><div className="border-2 border-slate-200 rounded-lg p-2 flex justify-between items-center bg-slate-50"><span className="text-xs font-black text-slate-800 uppercase">Manpower</span><span className="text-sm font-black text-slate-900">{state.services.neededCleaners ? `${state.services.neededCleaners} Cleaners` : '0 Cleaners'}</span></div></div>
+                                            <div className="flex justify-between items-center border-t border-slate-300 pt-2 print:border-t print:border-slate-800"><label className="block text-xs font-black text-slate-800 uppercase">Est. Cleaning Cost</label><span className="text-lg font-black text-slate-800">${cleaningAmount.toFixed(2)}</span></div>
                                         </div>
                                         <div className={!state.services.others ? 'print-hidden-section' : ''}>
-                                            <label className="block text-xs font-bold text-slate-600 uppercase mb-2 ml-1 no-print">Inspector Notes</label>
-                                            <label className="block text-xs font-black text-slate-800 uppercase mb-1 print-only">Inspector Notes</label>
+                                            <label className="block text-xs font-black text-slate-800 uppercase mb-2 ml-1">Inspector Notes</label>
                                             <textarea rows="4" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary bg-white no-print" value={state.services.others} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { others: e.target.value }})}></textarea>
                                             {/* Preview on Screen and Print */}
                                             <div className="mt-1"><FormattedNote text={state.services.others} /></div>
@@ -453,6 +450,8 @@
 
         function SettingsModal({ isOpen, onClose, priceList, setPriceList, settings, dispatch, showToast }) {
             const dialogRef = useRef(null);
+            const [showTheme, setShowTheme] = useState(false);
+
             useEffect(() => { if (isOpen) dialogRef.current?.showModal(); else dialogRef.current?.close(); }, [isOpen]);
             const handleChange = (key, val) => setPriceList(prev => ({ ...prev, [key]: val }));
             const handleSettingChange = (key, val) => dispatch({ type: 'SET_SETTINGS', payload: { [key]: val } });
@@ -469,52 +468,60 @@
 
             return (
                 <dialog ref={dialogRef} onClose={onClose} className="w-full max-w-md p-0 no-print">
-                    <div className="flex flex-col h-[80vh]">
+                    <div className="flex flex-col h-[80vh] sm:h-auto max-h-[85vh]">
                         <div className="flex justify-between items-center p-4 border-b border-slate-200"><h3 className="text-lg font-bold text-slate-800">Settings</h3><button onClick={onClose}><Icons.X /></button></div>
-                        <div className="p-6 space-y-6 bg-slate-50 overflow-y-auto flex-1">
+                        <div className="p-5 space-y-4 bg-slate-50 overflow-y-auto flex-1">
                             
-                            <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Document Settings</h4>
-                                <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div className="space-y-2">
+                                <div className="grid grid-cols-2 gap-3 mb-2">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-600 mb-1">Doc Type</label>
-                                        <select value={settings.docType || 'Quotation'} onChange={e => handleSettingChange('docType', e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                                        <label className="block text-xs font-black text-slate-700 mb-1">Doc Type</label>
+                                        <select value={settings.docType || 'Quotation'} onChange={e => handleSettingChange('docType', e.target.value)} className="w-full px-2 py-2 border border-slate-400 rounded-lg text-sm bg-white font-bold text-slate-900 shadow-sm">
                                             <option>Quotation</option><option>Invoice</option><option>Receipt</option><option>Assessment</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-600 mb-1">Company Logo</label>
-                                        <label className="flex items-center justify-center w-full px-3 py-2 border border-dashed border-primary text-primary rounded-lg text-xs font-bold cursor-pointer hover:bg-primaryLight">
-                                            <Icons.Upload /> <span className="ml-2">{settings.logo ? "Change Logo" : "Upload"}</span>
+                                        <label className="block text-xs font-black text-slate-700 mb-1">Company Logo</label>
+                                        <label className="flex items-center justify-center w-full px-2 py-2 border border-dashed border-primary text-primary rounded-lg text-xs font-bold cursor-pointer hover:bg-primaryLight">
+                                            <Icons.Upload /> <span className="ml-2">{settings.logo ? "Change" : "Upload"}</span>
                                             <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                                         </label>
                                     </div>
                                 </div>
-                                {settings.logo && <div className="text-center"><img src={settings.logo} className="h-16 mx-auto object-contain border rounded p-1" /><button onClick={() => handleSettingChange('logo', null)} className="text-xs text-red-500 underline mt-1">Remove Logo</button></div>}
+                                {settings.logo && <div className="text-center"><img src={settings.logo} className="h-12 mx-auto object-contain border rounded p-1" /><button onClick={() => handleSettingChange('logo', null)} className="text-xs text-red-500 underline mt-1">Remove Logo</button></div>}
                             </div>
 
-                            <div className="space-y-3 border-t pt-4">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">App Theme</h4>
-                                <div className="flex flex-wrap gap-3">
-                                    {Object.entries(themes).map(([key, theme]) => (
-                                        <button key={key} onClick={() => handleSettingChange('theme', key)} 
-                                            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${settings.theme === key ? 'border-slate-800 scale-110 shadow-md' : 'border-white ring-1 ring-slate-200'}`}
-                                            style={{backgroundColor: theme.primary}} title={theme.name}>
-                                            {settings.theme === key && <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
-                                        </button>
-                                    ))}
+                             <div className="space-y-2 border-t pt-3">
+                                <InputGroup label="Company Name" value={settings?.companyName} onChange={e => handleSettingChange('companyName', e.target.value)} labelClass="text-xs font-black text-slate-700" />
+                            </div>
+
+                            <div className="space-y-2 border-t pt-3">
+                                <div className="flex justify-between items-center cursor-pointer select-none" onClick={() => setShowTheme(!showTheme)}>
+                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">App Theme</h4>
+                                    <button className="text-xs font-bold text-primary bg-primaryLight px-3 py-1 rounded-full hover:bg-primary hover:text-white transition-colors">
+                                        {showTheme ? 'Hide Colours' : 'Change Colour'}
+                                    </button>
                                 </div>
+                                {showTheme && (
+                                    <div className="flex flex-wrap gap-3 animate-slide-up mt-2">
+                                        {Object.entries(themes).map(([key, theme]) => (
+                                            <button key={key} onClick={() => handleSettingChange('theme', key)} 
+                                                className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${settings.theme === key ? 'border-slate-800 scale-110 shadow-md' : 'border-white ring-1 ring-slate-200'}`}
+                                                style={{backgroundColor: theme.primary}} title={theme.name}>
+                                                {settings.theme === key && <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            <div className="space-y-3 border-t pt-4">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Company Details</h4>
-                                <InputGroup label="Company Name" value={settings?.companyName} onChange={e => handleSettingChange('companyName', e.target.value)} />
-                                <div className="mb-3"><label className="block text-xs font-bold text-slate-500 uppercase mb-1">Bank / Payment Info</label><textarea rows="3" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" value={settings?.bankInfo} onChange={e => handleSettingChange('bankInfo', e.target.value)}></textarea></div>
-                            </div>
-                            <div className="space-y-3 border-t pt-4">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Price List</h4>
-                                {curtainTypes.map(t => (<div key={t} className="flex items-center gap-2"><label className="w-1/2 text-sm font-medium">{t}</label><input type="number" value={priceList[t] || ''} onChange={e => handleChange(t, e.target.value)} className="w-1/2 px-3 py-2 border rounded-lg text-sm" /></div>))}
-                                <div className="flex items-center gap-2"><label className="w-1/2 text-sm font-medium">Cleaner Rate</label><input type="number" value={priceList['pricePerCleaner'] || ''} onChange={e => handleChange('pricePerCleaner', e.target.value)} className="w-1/2 px-3 py-2 border rounded-lg text-sm" /></div>
-                                <div className="flex items-center gap-2"><label className="w-1/2 text-sm font-medium">Supplies Fee</label><input type="number" value={priceList['cleaningSuppliesPrice'] || ''} onChange={e => handleChange('cleaningSuppliesPrice', e.target.value)} className="w-1/2 px-3 py-2 border rounded-lg text-sm" /></div>
+
+                            <div className="space-y-2 border-t pt-3">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Price List</h4>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                    {curtainTypes.map(t => (<div key={t}><label className="text-[10px] font-black text-slate-700 uppercase">{t}</label><input type="number" value={priceList[t] || ''} onChange={e => handleChange(t, e.target.value)} className="w-full px-3 py-2 border border-slate-400 rounded text-sm font-bold text-slate-900 bg-white shadow-sm" /></div>))}
+                                    <div><label className="text-[10px] font-black text-slate-700 uppercase">Cleaner Rate</label><input type="number" value={priceList['pricePerCleaner'] || ''} onChange={e => handleChange('pricePerCleaner', e.target.value)} className="w-full px-3 py-2 border border-slate-400 rounded text-sm font-bold text-slate-900 bg-white shadow-sm" /></div>
+                                    <div><label className="text-[10px] font-black text-slate-700 uppercase">Supplies Fee</label><input type="number" value={priceList['cleaningSuppliesPrice'] || ''} onChange={e => handleChange('cleaningSuppliesPrice', e.target.value)} className="w-full px-3 py-2 border border-slate-400 rounded text-sm font-bold text-slate-900 bg-white shadow-sm" /></div>
+                                </div>
                             </div>
                         </div>
                         <div className="p-4 bg-slate-100 border-t text-right"><button onClick={onClose} className="bg-primary text-white px-5 py-2 rounded-lg font-semibold text-sm">Save & Close</button></div>
@@ -542,7 +549,7 @@
                         <div className={`p-3 bg-white card-content ${isExpanded ? 'block' : 'hidden print:block'}`}>
                             <div className="mb-2 pb-1 border-b border-slate-200 curtain-print-row flex items-center justify-between">
                                 <div className="w-auto max-w-[35%] sm:w-1/3 curtain-print-left"><span className="text-xs font-black text-black uppercase">Item</span></div>
-                                <div className="flex items-center justify-end gap-2 flex-1 curtain-print-right"><div className="print-pleats-col flex items-center justify-center w-16 mr-2 print:mr-0"><span className="text-xs font-black text-black uppercase text-center print-pleats-input">Pleats/Dim</span></div><div className="print-qty-col flex items-center justify-center gap-1 w-24 print:w-auto"><span className="text-xs font-black text-black uppercase text-center w-full print-qty-input">Qty</span></div><div className="w-6 no-print"></div></div>
+                                <div className="flex items-center justify-end gap-2 flex-1 curtain-print-right"><div className="print-pleats-col flex items-center justify-center w-16 mr-2 print:mr-0"><span className="text-xs font-black text-black uppercase text-center print-pleats-input">Pleats</span></div><div className="print-qty-col flex items-center justify-center gap-1 w-24 print:w-auto"><span className="text-xs font-black text-black uppercase text-center w-full print-qty-input">Qty</span></div><div className="w-6 no-print"></div></div>
                             </div>
                             {curtainTypes.map(type => {
                                 if (type === 'Roman Blinds' && !showRoman) return null;
