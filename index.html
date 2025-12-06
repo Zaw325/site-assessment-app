@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mrs. Sparkle - Premium Access</title>
+    <title>Mrs. Sparkle - Site Assessment</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -60,7 +60,14 @@
             .card-container { box-shadow: none !important; border: none !important; border-bottom: 1px solid #eee !important; border-radius: 0 !important; margin-bottom: 10px !important; background: white !important; break-inside: avoid; }
             .card-header { background: #f1f5f9 !important; color: #000 !important; border: none !important; padding: 4px 0 !important; margin-bottom: 5px !important; }
             .card-header h3 { color: #000 !important; font-size: 12px !important; font-weight: 800 !important; text-transform: uppercase; }
-            input, textarea, select { border: none !important; background: transparent !important; padding: 0 !important; margin: 0 !important; font-weight: 600 !important; color: #000 !important; height: auto !important; -moz-appearance: textfield; box-shadow: none !important; }
+            
+            /* UPDATED INPUT STYLES FOR PRINT CONTRAST */
+            input, textarea, select { border: none !important; background: transparent !important; padding: 0 !important; margin: 0 !important; height: auto !important; -moz-appearance: textfield; box-shadow: none !important; }
+            
+            /* Specific fix for Client Details input distinction */
+            .input-group label { color: #64748b !important; font-size: 9px !important; text-transform: uppercase !important; font-weight: 700 !important; letter-spacing: 0.05em !important; }
+            .input-group input { color: #000 !important; font-weight: 900 !important; font-size: 13px !important; margin-top: 2px !important; }
+            
             input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
             .curtain-print-row { display: grid !important; grid-template-columns: 1fr 80px 40px !important; align-items: center !important; padding: 4px 0 !important; border-bottom: 1px dotted #e2e8f0; gap: 10px; }
             .curtain-print-left { width: auto !important; max-width: none !important; } 
@@ -71,8 +78,11 @@
             .print-qty-input { width: 100% !important; text-align: center !important; }
             .print-header { display: flex !important; justify-content: space-between; border-bottom: 2px solid var(--color-primary); padding-bottom: 10px; margin-bottom: 20px; }
             .print-footer { position: fixed; bottom: 0; left: 0; width: 100%; border-top: 1px solid #ccc; padding-top: 5px; background: white; }
-            .print-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            .print-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px !important; } /* Increased gap for better separation */
             .formatted-note-view { border: 1px solid #ddd !important; padding: 10px !important; border-radius: 8px !important; display: flex !important; flex-wrap: wrap; gap: 4px !important; margin-top: 5px !important; }
+            
+            .print-force-show { display: block !important; visibility: visible !important; opacity: 1 !important; }
+            .print-note-box { background-color: #fefce8 !important; border: 1px solid #eab308 !important; color: #000 !important; padding: 5px !important; border-radius: 4px !important; margin-top: 5px !important; }
         }
         dialog { border: none; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); padding: 0; }
         dialog::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
@@ -89,23 +99,20 @@
             <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primaryLight rounded-full mix-blend-overlay filter blur-[100px] opacity-20 animate-float" style="animation-delay: 2s;"></div>
         </div>
         <div class="w-full max-w-sm flex flex-col items-center relative z-10 glass-card rounded-3xl p-8 transform transition-all duration-300 scale-100">
-            <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center mb-6 shadow-xl border-4 border-white/50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center mb-6 shadow-xl border-4 border-white/50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
             </div>
-            <h1 class="text-2xl font-extrabold text-slate-800 mb-1 tracking-tight text-center">Hello, Sparkle Team</h1>
-            <p class="text-slate-500 text-sm mb-8 font-medium text-center">Please verify access code</p>
-            <div class="w-full space-y-5">
+            <h1 class="text-xl font-extrabold text-slate-800 mb-6 tracking-tight text-center">Mrs. Sparkle Access</h1>
+            
+            <div class="w-full space-y-4">
                 <div class="relative group">
-                    <input type="password" id="password-input" class="w-full bg-white text-slate-800 text-center font-bold text-xl rounded-2xl py-4 px-6 focus:ring-4 focus:ring-primary/20 focus:border-primary border-2 border-slate-100 transition-all outline-none placeholder:text-slate-300 shadow-sm" placeholder="••••••">
-                     <button id="toggle-pwd" class="absolute right-5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-primary transition-colors p-2">
-                        <svg id="eye-off" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
-                        <svg id="eye-on" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                    </button>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-2">Passcode</label>
+                    <input type="password" id="password-input" class="w-full bg-white text-slate-800 font-bold text-xl rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary border-2 border-slate-100 outline-none shadow-sm" placeholder="••••••">
                 </div>
-                <button id="unlock-button" class="w-full bg-gradient-to-r from-primary to-primaryDark hover:opacity-90 text-white font-bold rounded-2xl py-4 transition-all duration-300 shadow-lg shadow-primary/30 active:scale-95 flex items-center justify-center gap-2 transform hover:-translate-y-0.5"><span>Login</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></button>
+                
+                <button id="unlock-button" class="w-full bg-gradient-to-r from-primary to-primaryDark hover:opacity-90 text-white font-bold rounded-xl py-4 transition-all duration-300 shadow-lg shadow-primary/30 active:scale-95 flex items-center justify-center gap-2 mt-4"><span>Login</span><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></button>
             </div>
-            <div id="error-msg" class="mt-6 text-red-500 text-sm font-bold hidden bg-red-50 px-4 py-2 rounded-xl border border-red-100 flex items-center gap-2 animate-bounce w-full justify-center">Wrong Access Code</div>
-            <div class="mt-8 text-[10px] text-slate-400 font-bold tracking-widest uppercase">Mrs. Sparkle V25</div>
+            <div id="error-msg" class="mt-4 text-red-500 text-sm font-bold hidden bg-red-50 px-4 py-2 rounded-xl border border-red-100 flex items-center gap-2 animate-bounce w-full justify-center">Wrong Code</div>
         </div>
     </div>
 
@@ -113,10 +120,46 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const PWD = 'clean'; const loginOverlay = document.getElementById('login-overlay'); const appContainer = document.getElementById('app-container'); const unlockButton = document.getElementById('unlock-button'); const passwordInput = document.getElementById('password-input'); const errorMsg = document.getElementById('error-msg'); const toggleBtn = document.getElementById('toggle-pwd'); const eyeOff = document.getElementById('eye-off'); const eyeOn = document.getElementById('eye-on');
-            toggleBtn.onclick = () => { if(passwordInput.type === "password") { passwordInput.type = "text"; eyeOff.classList.add('hidden'); eyeOn.classList.remove('hidden'); } else { passwordInput.type = "password"; eyeOff.classList.remove('hidden'); eyeOn.classList.add('hidden'); } passwordInput.focus(); };
-            const attemptLogin = () => { passwordInput.blur(); if (passwordInput.value.trim() === PWD) { loginOverlay.style.opacity = '0'; loginOverlay.style.transform = 'scale(1.05)'; setTimeout(() => { loginOverlay.style.display = 'none'; }, 600); appContainer.classList.remove('hidden'); setTimeout(() => appContainer.classList.remove('opacity-0'), 50); } else { errorMsg.classList.remove('hidden'); passwordInput.classList.add('ring-2', 'ring-red-500', 'bg-red-50'); setTimeout(() => passwordInput.classList.remove('ring-2', 'ring-red-500', 'bg-red-50'), 2000); passwordInput.value = ''; } };
-            unlockButton.onclick = attemptLogin; passwordInput.onkeyup = (e) => { errorMsg.classList.add('hidden'); if (e.key === 'Enter') attemptLogin(); };
+            const PWD = 'clean'; 
+            const loginOverlay = document.getElementById('login-overlay'); 
+            const appContainer = document.getElementById('app-container'); 
+            const unlockButton = document.getElementById('unlock-button'); 
+            const passwordInput = document.getElementById('password-input'); 
+            const errorMsg = document.getElementById('error-msg'); 
+            
+            const attemptLogin = () => { 
+                passwordInput.blur(); 
+                if (passwordInput.value.trim() === PWD) { 
+                    
+                    let activeDocId = localStorage.getItem('sparkle_current_doc_id');
+                    const now = new Date();
+                    const loginTimeStr = now.toLocaleDateString('en-SG', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    localStorage.setItem('sparkle_login_time', loginTimeStr);
+
+                    if (!activeDocId) {
+                        activeDocId = 'job_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                        localStorage.setItem('sparkle_current_doc_id', activeDocId);
+                    }
+                    window.currentDocId = activeDocId;
+
+                    loginOverlay.style.opacity = '0'; 
+                    loginOverlay.style.transform = 'scale(1.05)'; 
+                    setTimeout(() => { loginOverlay.style.display = 'none'; }, 600); 
+                    appContainer.classList.remove('hidden'); 
+                    setTimeout(() => appContainer.classList.remove('opacity-0'), 50); 
+                    
+                    const event = new Event('login-success');
+                    window.dispatchEvent(event);
+
+                } else { 
+                    errorMsg.classList.remove('hidden'); 
+                    passwordInput.classList.add('ring-2', 'ring-red-500', 'bg-red-50'); 
+                    setTimeout(() => passwordInput.classList.remove('ring-2', 'ring-red-500', 'bg-red-50'), 2000); 
+                    passwordInput.value = ''; 
+                } 
+            };
+            unlockButton.onclick = attemptLogin; 
+            passwordInput.onkeyup = (e) => { errorMsg.classList.add('hidden'); if (e.key === 'Enter') attemptLogin(); };
         });
     </script>
 
@@ -128,11 +171,9 @@
 
     <script type="text/babel">
         const { useState, useEffect, useReducer, useMemo, useRef } = React;
-        const DOC_ID = "current_site_assessment";
         const curtainTypes = ['Blackout', 'Day', 'Night', 'Roman Blinds', 'Belts'];
         const pleatTypes = ['Blackout', 'Day', 'Night'];
         
-        // Themes Config
         const themes = {
             teal: { primary: '#0f766e', light: '#f0fdfa', dark: '#115e59', name: 'Sparkle Teal' },
             blue: { primary: '#2563eb', light: '#eff6ff', dark: '#1e40af', name: 'Ocean Blue' },
@@ -145,16 +186,14 @@
         const defaultState = { 
             customer: { name: '', address: '', contact: '', email: '', apptDate: '', collectionDate: '', cleanDate: '' }, 
             services: { windows: '', kitchenCondition: '', bedroomsCount: '', bathroomsCount: '', cupboards: '', rollerBlinds: '', mosquitoNets: '', balconies: '', others: '', neededCleaners: '', patchHoles: '', handymanNotes: '' }, 
-            rooms: [ { id: 1, name: 'Living Rm', curtains: createEmptyCurtains() }, { id: 2, name: 'Dining Rm', curtains: createEmptyCurtains() }, { id: 3, name: 'Master Bedroom', curtains: createEmptyCurtains() }, { id: 4, name: 'Guest Rm', curtains: createEmptyCurtains() } ], 
+            rooms: [ { id: 1, name: 'Living Rm', notes: '', curtains: createEmptyCurtains() }, { id: 2, name: 'Dining Rm', notes: '', curtains: createEmptyCurtains() }, { id: 3, name: 'Master Bedroom', notes: '', curtains: createEmptyCurtains() }, { id: 4, name: 'Guest Rm', notes: '', curtains: createEmptyCurtains() } ], 
             settings: { companyName: 'Mrs. Sparkle', bankInfo: '', terms: '', theme: 'teal', logo: null, docType: 'Quotation' } 
         };
         const defaultPrices = { Blackout: '1', Day: '1', Night: '1', 'Roman Blinds': '15', Belts: '2', pricePerCleaner: '50', cleaningSuppliesPrice: '0' };
 
-        // Components
         const Icon = ({ children, className = "" }) => ( <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg> );
         const Icons = { Save: () => <Icon><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></Icon>, Trash2: () => <Icon><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></Icon>, Plus: () => <Icon><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></Icon>, User: () => <Icon><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></Icon>, Calculator: () => <Icon><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="14"></line><line x1="12" y1="14" x2="12" y2="14"></line><line x1="8" y1="14" x2="8" y2="14"></line><line x1="16" y1="18" x2="16" y2="18"></line><line x1="12" y1="18" x2="12" y2="18"></line><line x1="8" y1="18" x2="8" y2="18"></line></Icon>, CheckSquare: () => <Icon><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></Icon>, AppWindow: () => <Icon><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M10 4v4"></path><path d="M2 8h20"></path><path d="M6 4v4"></path></Icon>, X: () => <Icon><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></Icon>, Settings: () => <Icon><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>, Hammer: () => <Icon><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></Icon>, Layers: () => <Icon><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></Icon>, Upload: () => <Icon><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></Icon> };
 
-        // Toast Component
         const Toast = ({ show, message, type }) => {
             if (!show) return null;
             return (
@@ -167,7 +206,6 @@
 
         const FormattedNote = ({ text }) => {
             if (!text) return null;
-            // Use flex-wrap to allow flow, gap-1 for spacing
             return (
                 <div className="formatted-note-view text-sm font-mono mt-2 p-3 border-2 border-slate-200 rounded-xl w-full bg-white flex flex-wrap gap-1 items-center shadow-sm">
                     {text.split(/(\*[^*]+\*|#[^#]+#)/g).map((part, index) => {
@@ -197,10 +235,12 @@
         const Card = ({ children, className = "" }) => <div className={`bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-4 card-container ${className}`}>{children}</div>;
         const CardHeader = ({ title, icon, onClick, className="" }) => (<div onClick={onClick} className={`bg-primaryLight px-4 py-3 border-b border-teal-100 flex items-center justify-between card-header ${className}`}><div className="flex items-center gap-2"><span className="text-primary">{icon}</span><h3 className="font-bold text-primaryDark tracking-wide text-sm uppercase">{title}</h3></div></div>);
         const SectionTitle = ({ title }) => <div className="flex items-center gap-2 mt-8 mb-3 px-1 section-title no-print"><div className="h-px bg-slate-300 flex-1"></div><h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">{title}</h4><div className="h-px bg-slate-300 flex-1"></div></div>;
+        
+        // UPDATED INPUT GROUP FOR BETTER PRINT CONTRAST
         const InputGroup = ({ label, value, onChange, type = "text", placeholder = "", disabled=false, step=null, labelClass="" }) => (
-            <div className="mb-3 input-group">
-                <label className={`block text-xs uppercase mb-1 ml-1 ${labelClass || 'font-bold text-slate-600'}`}>{label}</label>
-                <input type={type} value={value} onChange={onChange} placeholder={placeholder} step={step} className={`w-full px-3 py-2.5 border border-slate-300 bg-slate-50 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm text-sm font-medium text-slate-700 ${disabled ? 'bg-slate-100 text-slate-400' : ''}`} disabled={disabled} />
+            <div className="mb-3 input-group break-inside-avoid">
+                <label className={`block text-xs uppercase mb-1 ml-1 ${labelClass || 'font-bold text-slate-600'} print:text-slate-500 print:text-[10px] print:uppercase print:tracking-wider print:font-bold`}>{label}</label>
+                <input type={type} value={value} onChange={onChange} placeholder={placeholder} step={step} className={`w-full px-3 py-2.5 border border-slate-300 bg-slate-50 rounded-lg focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-sm text-sm font-medium text-slate-700 print:text-black print:font-extrabold print:text-sm ${disabled ? 'bg-slate-100 text-slate-400' : ''}`} disabled={disabled} />
             </div>
         );
         const TabButton = ({ label, icon, isActive, onClick }) => (<button onClick={onClick} className={`flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1 text-xs font-bold uppercase tracking-wide transition-all border-b-2 ${isActive ? 'border-primary text-primary bg-primaryLight' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}>{icon}<span>{label}</span></button>);
@@ -213,12 +253,13 @@
                 case 'SET_CUSTOMER': return { ...state, customer: { ...state.customer, ...action.payload } };
                 case 'SET_SERVICES': return { ...state, services: { ...state.services, ...action.payload } };
                 case 'SET_SETTINGS': return { ...state, settings: { ...state.settings, ...action.payload } };
-                case 'ADD_ROOM': return { ...state, rooms: [...state.rooms, { id: Date.now(), name: action.payload, curtains: createEmptyCurtains() }] };
+                case 'ADD_ROOM': return { ...state, rooms: [...state.rooms, { id: Date.now(), name: action.payload, notes: '', curtains: createEmptyCurtains() }] };
                 case 'DELETE_ROOM': return { ...state, rooms: state.rooms.filter(r => r.id !== action.payload) };
                 case 'UPDATE_SINGLE_CURTAIN_DATA': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.id ? { ...room, curtains: { ...room.curtains, [action.payload.type]: action.payload.newData } } : room )};
                 case 'ADD_PLEAT_ITEM': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: [ ...room.curtains[action.payload.type], { id: Date.now(), pleats: '', qty: 0 } ] } } : room )};
                 case 'DELETE_PLEAT_ITEM': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: room.curtains[action.payload.type].filter(item => item.id !== action.payload.itemId) } } : room )};
                 case 'UPDATE_PLEAT_ITEM': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: room.curtains[action.payload.type].map(item => item.id === action.payload.itemId ? action.payload.newData : item ) } } : room )};
+                case 'UPDATE_ROOM_NOTE': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, notes: action.payload.note } : room )};
                 case 'RESET': return defaultState;
                 default: return state;
             }
@@ -231,11 +272,18 @@
             const [activeTab, setActiveTab] = useState('curtains');
             const [status, setStatus] = useState('connecting');
             const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+            const [readyToLoad, setReadyToLoad] = useState(false);
 
             const showToast = (msg, type = 'success') => {
                 setToast({ show: true, message: msg, type });
                 setTimeout(() => setToast(prev => ({ ...prev, show: false })), 3000);
             };
+            
+            useEffect(() => {
+                const handleLogin = () => setReadyToLoad(true);
+                window.addEventListener('login-success', handleLogin);
+                return () => window.removeEventListener('login-success', handleLogin);
+            }, []);
 
             useEffect(() => {
                 const currentThemeKey = state.settings.theme || 'teal';
@@ -247,6 +295,10 @@
             }, [state.settings.theme]);
 
             useEffect(() => {
+                if(!readyToLoad) return;
+                
+                const DOC_ID = window.currentDocId || "current_site_assessment";
+
                 let unsub = null;
                 const connect = () => {
                     if (window.isFirebaseReady && window.firebaseDB) {
@@ -261,16 +313,27 @@
                                         dispatch({ type: 'LOAD_FROM_CLOUD', payload: data.state || defaultState });
                                         if(data.priceList) setPriceList(data.priceList);
                                     }
-                                } else { window.firebaseSetDoc(docRef, { state: defaultState, priceList: defaultPrices }); }
+                                } else { 
+                                    const loginTime = localStorage.getItem('sparkle_login_time');
+                                    if(loginTime && !state.customer.apptDate) {
+                                        const newState = { ...defaultState, customer: { ...defaultState.customer, apptDate: loginTime } };
+                                        window.firebaseSetDoc(docRef, { state: newState, priceList: defaultPrices });
+                                        dispatch({ type: 'LOAD_FROM_CLOUD', payload: newState });
+                                    } else {
+                                        window.firebaseSetDoc(docRef, { state: defaultState, priceList: defaultPrices }); 
+                                    }
+                                }
                             }, (err) => { console.error(err); setStatus('offline'); });
                         } catch (e) { console.error(e); setStatus('error'); }
                     } else { document.addEventListener('firebase-ready', connect, { once: true }); }
                 };
                 connect();
                 return () => { if(unsub) unsub(); document.removeEventListener('firebase-ready', connect); };
-            }, []);
+            }, [readyToLoad]);
 
             useEffect(() => {
+                if(!readyToLoad) return;
+                const DOC_ID = window.currentDocId || "current_site_assessment";
                 const handler = setTimeout(() => {
                     if (status === 'online' && window.firebaseDB) {
                         const db = window.firebaseDB;
@@ -281,7 +344,7 @@
                     }
                 }, 2000);
                 return () => clearTimeout(handler);
-            }, [state, priceList, status]);
+            }, [state, priceList, status, readyToLoad]);
 
             const { curtainAmount, cleaningAmount, totalAmount, totalPieces } = useMemo(() => {
                 let curtainTotal = 0;
@@ -306,13 +369,34 @@
                 return { curtainAmount: curtainTotal, cleaningAmount: cleaningTotal, totalAmount: curtainTotal + cleaningTotal, totalPieces: pieces };
             }, [state, priceList]);
 
-            const handleReset = () => { if(confirm("Reset?")) { dispatch({ type: 'RESET' }); setPriceList(defaultPrices); showToast("All data reset", 'success'); } };
+            const handleReset = () => { 
+                if(confirm("Start a new job? This will clear current form.")) { 
+                    const newId = 'job_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                    localStorage.setItem('sparkle_current_doc_id', newId);
+                    
+                    const now = new Date();
+                    const loginTimeStr = now.toLocaleDateString('en-SG', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    localStorage.setItem('sparkle_login_time', loginTimeStr);
+                    
+                    window.currentDocId = newId;
+                    
+                    dispatch({ type: 'RESET' }); 
+                    dispatch({ type: 'SET_CUSTOMER', payload: { apptDate: loginTimeStr } });
+
+                    setPriceList(defaultPrices); 
+                    showToast("Started New Job", 'success'); 
+                    
+                    setReadyToLoad(false);
+                    setTimeout(() => setReadyToLoad(true), 100);
+                } 
+            };
+            
             const handlePrint = () => { showToast("Preparing Print...", 'success'); setTimeout(() => window.print(), 500); };
             const isCleaningEmpty = !state.services.kitchenCondition && !state.services.bedroomsCount && !state.services.bathroomsCount && !state.services.neededCleaners && !state.services.others;
-            const isHandymanEmpty = (!state.services.patchHoles || state.services.patchHoles.trim() === '') && (!state.services.handymanNotes || state.services.handymanNotes.trim() === '');
+            const isHandymanEmpty = !state.services.patchHoles && !state.services.handymanNotes;
             const boldLabelClass = "font-black text-slate-800 text-sm uppercase"; 
 
-            if (status === 'connecting') return <div className="flex items-center justify-center h-screen text-slate-500 flex-col gap-4"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div><p>Connecting...</p></div>;
+            if (status === 'connecting') return <div className="flex items-center justify-center h-screen text-slate-500 flex-col gap-4"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div><p>Syncing...</p></div>;
 
             return (
                 <div className="min-h-screen pb-24 bg-slate-50">
@@ -346,7 +430,17 @@
                                 <InputGroup label="Name" value={state.customer.name} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { name: e.target.value }})} />
                                 <InputGroup label="Address" value={state.customer.address} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { address: e.target.value }})} />
                                 <div className="grid grid-cols-2 gap-4 print-grid-2"><InputGroup label="Contact" value={state.customer.contact} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { contact: e.target.value }})} /><InputGroup label="Email" value={state.customer.email} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { email: e.target.value }})} /></div>
-                                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 mt-2 grid grid-cols-2 gap-4 print:bg-transparent print:border-0 print:p-0 print-grid-2"><InputGroup label="Appt Date" type="datetime-local" value={state.customer.apptDate} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { apptDate: e.target.value }})} /><InputGroup label="Collection" type="date" value={state.customer.collectionDate} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { collectionDate: e.target.value }})} /><div className="col-span-2 print:col-span-2"><InputGroup label="Clean / Install" type="date" value={state.customer.cleanDate} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { cleanDate: e.target.value }})} /></div></div>
+                                
+                                <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 mt-2 grid grid-cols-2 gap-4 print:bg-transparent print:border-0 print:p-0 print-grid-2">
+                                    <div>
+                                        <label className="block text-xs uppercase mb-1 ml-1 font-bold text-slate-600 print:text-slate-500 print:text-[10px] print:uppercase print:tracking-wider print:font-bold">Date / Time</label>
+                                        <div className="w-full px-3 py-2.5 border border-slate-300 bg-slate-100 rounded-lg text-sm font-bold text-slate-700 print:bg-transparent print:border-0 print:px-0 print:text-black print:font-extrabold print:text-sm">
+                                            {state.customer.apptDate || localStorage.getItem('sparkle_login_time') || '-'}
+                                        </div>
+                                    </div>
+                                    <InputGroup label="Collection" type="date" value={state.customer.collectionDate} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { collectionDate: e.target.value }})} />
+                                    <div className="col-span-2 print:col-span-2"><InputGroup label="Clean / Install" type="date" value={state.customer.cleanDate} onChange={e => dispatch({ type: 'SET_CUSTOMER', payload: { cleanDate: e.target.value }})} /></div>
+                                </div>
                             </div>
                         </Card>
 
@@ -397,7 +491,6 @@
                                         <div className={!state.services.others ? 'print-hidden-section' : ''}>
                                             <label className="block text-xs font-black text-slate-800 uppercase mb-2 ml-1">Inspector Notes</label>
                                             <textarea rows="4" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary bg-white no-print" value={state.services.others} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { others: e.target.value }})}></textarea>
-                                            {/* Preview on Screen and Print */}
                                             <div className="mt-1"><FormattedNote text={state.services.others} /></div>
                                         </div>
                                     </div>
@@ -415,7 +508,6 @@
                                     <div className={!state.services.handymanNotes ? 'print-hidden-section' : ''}>
                                         <label className="block text-xs font-bold text-slate-500 uppercase mb-2 no-print">Description</label>
                                         <textarea rows="6" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-primary bg-slate-50 no-print" value={state.services.handymanNotes} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { handymanNotes: e.target.value }})}></textarea>
-                                        {/* Preview on Screen and Print */}
                                         <div className="mt-1"><FormattedNote text={state.services.handymanNotes} /></div>
                                     </div>
                                 </div>
@@ -475,13 +567,13 @@
                             <div className="space-y-2">
                                 <div className="grid grid-cols-2 gap-3 mb-2">
                                     <div>
-                                        <label className="block text-xs font-black text-slate-700 mb-1">Doc Type</label>
-                                        <select value={settings.docType || 'Quotation'} onChange={e => handleSettingChange('docType', e.target.value)} className="w-full px-2 py-2 border border-slate-400 rounded-lg text-sm bg-white font-bold text-slate-900 shadow-sm">
+                                        <label className="block text-xs font-bold text-slate-500 mb-1">Doc Type</label>
+                                        <select value={settings.docType || 'Quotation'} onChange={e => handleSettingChange('docType', e.target.value)} className="w-full px-2 py-2 border rounded-lg text-sm bg-white">
                                             <option>Quotation</option><option>Invoice</option><option>Receipt</option><option>Assessment</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-black text-slate-700 mb-1">Company Logo</label>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1">Company Logo</label>
                                         <label className="flex items-center justify-center w-full px-2 py-2 border border-dashed border-primary text-primary rounded-lg text-xs font-bold cursor-pointer hover:bg-primaryLight">
                                             <Icons.Upload /> <span className="ml-2">{settings.logo ? "Change" : "Upload"}</span>
                                             <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -492,7 +584,7 @@
                             </div>
 
                              <div className="space-y-2 border-t pt-3">
-                                <InputGroup label="Company Name" value={settings?.companyName} onChange={e => handleSettingChange('companyName', e.target.value)} labelClass="text-xs font-black text-slate-700" />
+                                <InputGroup label="Company Name" value={settings?.companyName} onChange={e => handleSettingChange('companyName', e.target.value)} labelClass="text-xs font-bold text-slate-500" />
                             </div>
 
                             <div className="space-y-2 border-t pt-3">
@@ -518,9 +610,9 @@
                             <div className="space-y-2 border-t pt-3">
                                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Price List</h4>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                    {curtainTypes.map(t => (<div key={t}><label className="text-[10px] font-black text-slate-700 uppercase">{t}</label><input type="number" value={priceList[t] || ''} onChange={e => handleChange(t, e.target.value)} className="w-full px-3 py-2 border border-slate-400 rounded text-sm font-bold text-slate-900 bg-white shadow-sm" /></div>))}
-                                    <div><label className="text-[10px] font-black text-slate-700 uppercase">Cleaner Rate</label><input type="number" value={priceList['pricePerCleaner'] || ''} onChange={e => handleChange('pricePerCleaner', e.target.value)} className="w-full px-3 py-2 border border-slate-400 rounded text-sm font-bold text-slate-900 bg-white shadow-sm" /></div>
-                                    <div><label className="text-[10px] font-black text-slate-700 uppercase">Supplies Fee</label><input type="number" value={priceList['cleaningSuppliesPrice'] || ''} onChange={e => handleChange('cleaningSuppliesPrice', e.target.value)} className="w-full px-3 py-2 border border-slate-400 rounded text-sm font-bold text-slate-900 bg-white shadow-sm" /></div>
+                                    {curtainTypes.map(t => (<div key={t}><label className="text-[10px] font-bold text-slate-500 uppercase">{t}</label><input type="number" value={priceList[t] || ''} onChange={e => handleChange(t, e.target.value)} className="w-full px-2 py-1.5 border rounded text-sm" /></div>))}
+                                    <div><label className="text-[10px] font-bold text-slate-500 uppercase">Cleaner Rate</label><input type="number" value={priceList['pricePerCleaner'] || ''} onChange={e => handleChange('pricePerCleaner', e.target.value)} className="w-full px-2 py-1.5 border rounded text-sm" /></div>
+                                    <div><label className="text-[10px] font-bold text-slate-500 uppercase">Supplies Fee</label><input type="number" value={priceList['cleaningSuppliesPrice'] || ''} onChange={e => handleChange('cleaningSuppliesPrice', e.target.value)} className="w-full px-2 py-1.5 border rounded text-sm" /></div>
                                 </div>
                             </div>
                         </div>
@@ -532,6 +624,7 @@
 
         function RoomCard({ room, dispatch }) {
             const [isExpanded, setIsExpanded] = useState(true);
+            const [showNote, setShowNote] = useState(false);
             const total = useMemo(() => Object.values(room.curtains).reduce((sum, data) => { if (Array.isArray(data)) { return sum + data.reduce((arrSum, item) => arrSum + (parseInt(item.qty) || 0), 0); } else { return sum + (parseInt(data?.qty) || 0); } }, 0), [room.curtains]);
             const [showRoman, setShowRoman] = useState(false);
             const hasRomanData = (room.curtains['Roman Blinds']?.qty > 0 || room.curtains['Roman Blinds']?.romanDims?.length || room.curtains['Roman Blinds']?.romanDims?.height);
@@ -540,7 +633,7 @@
             const ChevronUp = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" /></svg>;
 
             return (
-                <div className={total === 0 ? "print-hidden-section" : ""}>
+                <div className={total === 0 && !room.notes ? "print-hidden-section" : ""}>
                     <Card className="page-break transition-all hover:shadow-md">
                         <div onClick={() => setIsExpanded(!isExpanded)} className="bg-white px-4 py-3 border-b border-slate-100 flex justify-between items-center card-header cursor-pointer select-none">
                             <div className="flex items-center gap-2"><div className="text-slate-400 no-print">{isExpanded ? <ChevronUp/> : <ChevronDown/>}</div><span className="font-bold text-slate-700 text-lg">{room.name}</span></div>
@@ -557,7 +650,20 @@
                                     return (<div key={type} className={`py-1 ${room.curtains[type].every(i=>!parseInt(i.qty)) ? 'print-hidden-section' : ''}`}>{room.curtains[type].map((item, idx) => <CurtainInput key={item.id} label={type} data={item} onChange={d => dispatch({ type: 'UPDATE_PLEAT_ITEM', payload: { roomId: room.id, type, itemId: item.id, newData: d } })} onDelete={() => dispatch({ type: 'DELETE_PLEAT_ITEM', payload: { roomId: room.id, type, itemId: item.id } })} isPleatType={true} showLabel={idx === 0} canDelete={room.curtains[type].length > 1} />)}<div className="flex justify-end mt-1 mb-2 pr-2 no-print"><button onClick={() => dispatch({ type: 'ADD_PLEAT_ITEM', payload: { roomId: room.id, type } })} className="flex items-center gap-1 text-xs text-primary font-bold opacity-70 hover:opacity-100">+ Add {type}</button></div></div>);
                                 } else { return <CurtainInput key={type} label={type} data={room.curtains[type]} onChange={d => dispatch({ type: 'UPDATE_SINGLE_CURTAIN_DATA', payload: { id: room.id, type, newData: d } })} onDelete={() => { if(type === 'Roman Blinds') { setShowRoman(false); dispatch({ type: 'UPDATE_SINGLE_CURTAIN_DATA', payload: { id: room.id, type, newData: { qty: 0, pleats: '', romanDims: {length:'', height:'', unit:'cm'} } } }); } }} isPleatType={false} showLabel={true} canDelete={type === 'Roman Blinds'} />; }
                             })}
-                            {!showRoman && <div className="flex justify-end mt-2 pr-2 no-print"><button onClick={() => setShowRoman(true)} className="flex items-center gap-1 text-xs text-primary font-bold border border-primary/30 rounded-full px-3 py-1 hover:bg-primaryLight">+ Add Roman Blinds</button></div>}
+                            
+                            <div className="flex justify-end items-center gap-2 mt-2 pr-2 no-print">
+                                {!showNote && !room.notes && (
+                                    <button onClick={() => setShowNote(true)} className="flex items-center gap-1 text-xs text-primary font-bold border border-primary/30 rounded-full px-3 py-1 hover:bg-primaryLight">+ Note</button>
+                                )}
+                                {!showRoman && <button onClick={() => setShowRoman(true)} className="flex items-center gap-1 text-xs text-primary font-bold border border-primary/30 rounded-full px-3 py-1 hover:bg-primaryLight">+ Add Roman Blinds</button>}
+                            </div>
+                            
+                            {(showNote || room.notes) && (
+                                <div className="mt-2 animate-slide-up border-t border-slate-100 pt-2 print-force-show">
+                                    <div className="no-print mb-2"><textarea placeholder="Room notes..." className="w-full text-sm p-2 bg-yellow-50 border border-yellow-200 rounded text-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400" rows="2" value={room.notes || ''} onChange={(e) => dispatch({ type: 'UPDATE_ROOM_NOTE', payload: { roomId: room.id, note: e.target.value } })}></textarea></div>
+                                    {room.notes && (<div className="bg-yellow-100 border-l-4 border-yellow-400 p-2 rounded text-xs font-bold text-slate-800 break-words print-note-box print-force-show"><span className="uppercase text-[9px] text-yellow-700 block mb-1">Note:</span>{room.notes}</div>)}
+                                </div>
+                            )}
                         </div>
                     </Card>
                 </div>
