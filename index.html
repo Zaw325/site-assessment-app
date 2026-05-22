@@ -43,7 +43,8 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; }
         .print-only { display: none; }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1); }
-        
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{ -webkit-box-shadow: 0 0 0 30px white inset !important; }
+
         .text-yellow-custom { color: #b45309; font-weight: 800; background: #fef3c7; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 0 2px; border: 1px solid #fcd34d; } 
         .text-red-custom { color: #b91c1c; font-weight: 800; background: #fee2e2; padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 0 2px; border: 1px solid #fca5a5; } 
 
@@ -61,13 +62,25 @@
             input, textarea, select { border: none !important; background: transparent !important; padding: 0 !important; margin: 0 !important; height: auto !important; -moz-appearance: textfield; box-shadow: none !important; }
             .input-group label { color: #64748b !important; font-size: 9px !important; text-transform: uppercase !important; font-weight: 700 !important; letter-spacing: 0.05em !important; }
             .input-group input { color: #000 !important; font-weight: 900 !important; font-size: 13px !important; margin-top: 2px !important; }
+            input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
             .curtain-print-row { display: grid !important; grid-template-columns: 1fr 80px 40px !important; align-items: center !important; padding: 4px 0 !important; border-bottom: 1px dotted #e2e8f0; gap: 10px; }
+            .curtain-print-left { width: auto !important; max-width: none !important; } 
+            .curtain-print-right { width: auto !important; justify-content: flex-end !important; display: contents !important; }
+            .print-pleats-col { text-align: center !important; justify-self: center !important; width: auto !important; margin: 0 !important; }
+            .print-qty-col { text-align: center !important; justify-self: center !important; font-weight: 800 !important; width: auto !important; margin: 0 !important; }
+            .print-pleats-input { width: 100% !important; text-align: center !important; }
+            .print-qty-input { width: 100% !important; text-align: center !important; }
             .print-header { display: flex !important; justify-content: space-between; border-bottom: 2px solid var(--color-primary); padding-bottom: 10px; margin-bottom: 20px; }
             .print-footer { position: fixed; bottom: 0; left: 0; width: 100%; border-top: 1px solid #ccc; padding-top: 5px; background: white; }
             .print-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px !important; } 
             .formatted-note-view { border: 1px solid #ddd !important; padding: 10px !important; border-radius: 8px !important; display: flex !important; flex-wrap: wrap; gap: 4px !important; margin-top: 5px !important; }
             .print-force-show { display: block !important; visibility: visible !important; opacity: 1 !important; }
             .print-note-box { background-color: #fefce8 !important; border: 1px solid #eab308 !important; color: #000 !important; padding: 5px !important; border-radius: 4px !important; margin-top: 5px !important; }
+            
+            /* Enhanced print utility for Manpower box */
+            .print-bg-green-light { background-color: #f0fdfa !important; border-color: #99f6e4 !important; }
+
+            /* Ensure collapsed content shows in print */
             .print-show-always { display: block !important; height: auto !important; opacity: 1 !important; visibility: visible !important; overflow: visible !important; }
         }
         dialog { border: none; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); padding: 0; }
@@ -79,34 +92,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
 
-    <div id="app-container"><div id="root"></div></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Auto-bypass login and set up initial ID
-            let activeDocId = localStorage.getItem('sparkle_current_doc_id');
-            const now = new Date();
-            const loginTimeStr = now.toLocaleDateString('en-SG', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            localStorage.setItem('sparkle_login_time', loginTimeStr);
-
-            if (!activeDocId) {
-                activeDocId = 'job_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-                localStorage.setItem('sparkle_current_doc_id', activeDocId);
-            }
-            window.currentDocId = activeDocId;
-            
-            // Trigger the app to load
-            const event = new Event('login-success');
-            window.dispatchEvent(event);
-        });
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"; 
-        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        const firebaseConfig = { apiKey: "AIzaSyBqcWqvSxf5fo7P-kAv_poZdQRabCe7OPM", authDomain: "site-assessment-db.firebaseapp.com", projectId: "site-assessment-db", storageBucket: "site-assessment-db.firebasestorage.app", messagingSenderId: "200478658724", appId: "1:200478658724:web:63c50046b6e31c44549631", measurementId: "G-T7HTQP7QGR" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app); window.firebaseDB = db; window.firebaseDoc = doc; window.firebaseOnSnapshot = onSnapshot; window.firebaseSetDoc = setDoc; window.isFirebaseReady = true; document.dispatchEvent(new Event('firebase-ready'));
-    </script>
+    <div id="app-container" class="block opacity-100"><div id="root"></div></div>
 
     <script type="text/babel">
         const { useState, useEffect, useReducer, useMemo, useRef } = React;
@@ -128,7 +114,8 @@
             rooms: [ { id: 1, name: 'Living Rm', notes: '', curtains: createEmptyCurtains() }, { id: 2, name: 'Dining Rm', notes: '', curtains: createEmptyCurtains() }, { id: 3, name: 'Master Bedroom', notes: '', curtains: createEmptyCurtains() }, { id: 4, name: 'Guest Rm', notes: '', curtains: createEmptyCurtains() } ], 
             settings: { companyName: 'Mrs. Sparkle', bankInfo: '', terms: '', theme: 'teal', logo: null, docType: 'Quotation' } 
         };
-        const defaultPrices = { Blackout: '1', Day: '1', Night: '1', 'Roman Blinds': '15', Belts: '2', pricePerCleaner: '50', cleaningSuppliesPrice: '0' };
+        
+        const defaultPrices = { Blackout: '3', Day: '1.50', Night: '2', 'Roman Blinds': '', Belts: '1', pricePerCleaner: '200', cleaningSuppliesPrice: '150' };
 
         const Icon = ({ children, className = "" }) => ( <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg> );
         const Icons = { 
@@ -140,7 +127,7 @@
             CheckSquare: () => <Icon><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></Icon>, 
             AppWindow: () => <Icon><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M10 4v4"></path><path d="M2 8h20"></path><path d="M6 4v4"></path></Icon>, 
             X: () => <Icon><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></Icon>, 
-            Settings: () => <Icon><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>, 
+            Settings: () => <Icon><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>, 
             Hammer: () => <Icon><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></Icon>, 
             Layers: () => <Icon><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></Icon>, 
             Upload: () => <Icon><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></Icon>,
@@ -216,17 +203,62 @@
                 </div>
             </div>
         );
+
+        const CounterInputGroup = ({ label, value, onChange, labelClass="" }) => {
+            const numValue = parseInt(value) || 0;
+            return (
+                <div className="mb-3 input-group break-inside-avoid">
+                    <label className={`block text-xs uppercase mb-1 ml-1 ${labelClass || 'font-bold text-slate-600'}`}>{label}</label>
+                    <div className="flex items-center border border-slate-300 bg-slate-50 rounded-lg p-1 shadow-sm">
+                        <button 
+                            type="button"
+                            onClick={() => onChange(Math.max(0, numValue - 1).toString())}
+                            className="w-8 h-8 flex items-center justify-center rounded bg-teal-50 text-teal-700 hover:bg-teal-100 font-black text-lg transition-colors select-none"
+                        >
+                            -
+                        </button>
+                        <input 
+                            type="number" 
+                            value={value} 
+                            onChange={e => {
+                                const val = e.target.value;
+                                onChange(val === '' ? '' : (parseInt(val) || 0).toString());
+                            }}
+                            className="w-full text-center bg-transparent border-0 focus:outline-none focus:ring-0 text-sm font-bold text-slate-700"
+                        />
+                        <button 
+                            type="button"
+                            onClick={() => onChange((numValue + 1).toString())}
+                            className="w-8 h-8 flex items-center justify-center rounded bg-teal-600 text-white hover:bg-teal-700 font-black text-lg transition-colors select-none"
+                        >
+                            +
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
         const TabButton = ({ label, icon, isActive, onClick }) => (<button onClick={onClick} className={`flex-1 py-3 px-2 flex flex-col items-center justify-center gap-1 text-xs font-bold uppercase tracking-wide transition-all border-b-2 ${isActive ? 'border-primary text-primary bg-primaryLight' : 'border-transparent text-slate-400 hover:bg-slate-50'}`}>{icon}<span>{label}</span></button>);
 
         function createEmptyCurtains() { const newCurtains = {}; pleatTypes.forEach(type => { newCurtains[type] = [ { id: Date.now(), pleats: '', qty: 0 } ]; }); newCurtains['Roman Blinds'] = { pleats: '', qty: 0, romanDims: { length: '', height: '', unit: 'cm' } }; newCurtains['Belts'] = { pleats: '', qty: 0 }; return newCurtains; }
 
         function appReducer(state, action) {
             switch (action.type) {
-                case 'LOAD_FROM_CLOUD': return { ...defaultState, ...action.payload };
+                case 'LOAD_LOCAL_DATA': return { ...defaultState, ...action.payload };
                 case 'SET_CUSTOMER': return { ...state, customer: { ...state.customer, ...action.payload } };
                 case 'SET_SERVICES': return { ...state, services: { ...state.services, ...action.payload } };
                 case 'SET_SETTINGS': return { ...state, settings: { ...state.settings, ...action.payload } };
-                case 'ADD_ROOM': return { ...state, rooms: [...state.rooms, { id: Date.now(), name: action.payload, notes: '', curtains: createEmptyCurtains() }] };
+                case 'ADD_ROOM': {
+                    let nextRoomNum = 1;
+                    while (state.rooms.some(r => r.name === `Room ${nextRoomNum}`)) {
+                        nextRoomNum++;
+                    }
+                    const roomName = `Room ${nextRoomNum}`;
+                    return { 
+                        ...state, 
+                        rooms: [...state.rooms, { id: Date.now(), name: roomName, notes: '', curtains: createEmptyCurtains() }] 
+                    };
+                }
                 case 'DELETE_ROOM': return { ...state, rooms: state.rooms.filter(r => r.id !== action.payload) };
                 case 'UPDATE_SINGLE_CURTAIN_DATA': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.id ? { ...room, curtains: { ...room.curtains, [action.payload.type]: action.payload.newData } } : room )};
                 case 'ADD_PLEAT_ITEM': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: [ ...room.curtains[action.payload.type], { id: Date.now(), pleats: '', qty: 0 } ] } } : room )};
@@ -243,18 +275,9 @@
             const [priceList, setPriceList] = useState(defaultPrices);
             const [isSettingsOpen, setIsSettingsOpen] = useState(false);
             const [activeTab, setActiveTab] = useState('curtains');
-            const [status, setStatus] = useState('connecting');
+            const [status, setStatus] = useState('online'); 
             const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-            const [readyToLoad, setReadyToLoad] = useState(false);
             const [isClientExpanded, setIsClientExpanded] = useState(true);
-
-            useEffect(() => {
-                const handleLogin = () => setReadyToLoad(true);
-                window.addEventListener('login-success', handleLogin);
-                // Check if already "logged in" by DOMContentLoaded logic
-                if (window.currentDocId) setReadyToLoad(true);
-                return () => window.removeEventListener('login-success', handleLogin);
-            }, []);
 
             const showToast = (msg, type = 'success') => {
                 setToast({ show: true, message: msg, type });
@@ -296,50 +319,38 @@
             }, [state.settings.theme]);
 
             useEffect(() => {
-                if(!readyToLoad) return;
-                const DOC_ID = window.currentDocId || "current_site_assessment";
-                let unsub = null;
-                const connect = () => {
-                    if (window.isFirebaseReady && window.firebaseDB) {
-                        try {
-                            const db = window.firebaseDB;
-                            const docRef = window.firebaseDoc(db, "site_assessments", DOC_ID);
-                            unsub = window.firebaseOnSnapshot(docRef, (docSnap) => {
-                                setStatus('online');
-                                if (docSnap.exists()) {
-                                    const data = docSnap.data();
-                                    if (JSON.stringify(data.state) !== JSON.stringify(state)) {
-                                        dispatch({ type: 'LOAD_FROM_CLOUD', payload: data.state || defaultState });
-                                        if(data.priceList) setPriceList(data.priceList);
-                                    }
-                                } else { 
-                                    const loginTime = localStorage.getItem('sparkle_login_time');
-                                    const newState = { ...defaultState, customer: { ...defaultState.customer, apptDate: loginTime } };
-                                    window.firebaseSetDoc(docRef, { state: newState, priceList: defaultPrices });
-                                    dispatch({ type: 'LOAD_FROM_CLOUD', payload: newState });
-                                }
-                            }, (err) => { console.error(err); setStatus('offline'); });
-                        } catch (e) { console.error(e); setStatus('error'); }
-                    } else { document.addEventListener('firebase-ready', connect, { once: true }); }
-                };
-                connect();
-                return () => { if(unsub) unsub(); document.removeEventListener('firebase-ready', connect); };
-            }, [readyToLoad]);
+                let activeDocId = localStorage.getItem('sparkle_current_doc_id');
+                if (!activeDocId) {
+                    activeDocId = 'job_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+                    localStorage.setItem('sparkle_current_doc_id', activeDocId);
+                    
+                    const now = new Date();
+                    const loginTimeStr = now.toLocaleDateString('en-SG', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    localStorage.setItem('sparkle_login_time', loginTimeStr);
+                }
+                window.currentDocId = activeDocId;
+
+                const savedData = localStorage.getItem('sparkle_data_' + activeDocId);
+                if (savedData) {
+                    const parsed = JSON.parse(savedData);
+                    if (parsed.state) dispatch({ type: 'LOAD_LOCAL_DATA', payload: parsed.state });
+                    if (parsed.priceList) setPriceList(parsed.priceList);
+                } else {
+                    const loginTime = localStorage.getItem('sparkle_login_time');
+                    if(loginTime && !state.customer.apptDate) {
+                        dispatch({ type: 'SET_CUSTOMER', payload: { apptDate: loginTime } });
+                    }
+                }
+            }, []);
 
             useEffect(() => {
-                if(!readyToLoad) return;
-                const DOC_ID = window.currentDocId || "current_site_assessment";
+                const DOC_ID = window.currentDocId;
+                if (!DOC_ID) return;
                 const handler = setTimeout(() => {
-                    if (status === 'online' && window.firebaseDB) {
-                        const db = window.firebaseDB;
-                        const docRef = window.firebaseDoc(db, "site_assessments", DOC_ID);
-                        window.firebaseSetDoc(docRef, { state, priceList }, { merge: true })
-                            .then(() => {})
-                            .catch(err => console.error("Auto-save failed", err));
-                    }
-                }, 2000);
+                    localStorage.setItem('sparkle_data_' + DOC_ID, JSON.stringify({ state, priceList }));
+                }, 1000);
                 return () => clearTimeout(handler);
-            }, [state, priceList, status, readyToLoad]);
+            }, [state, priceList]);
 
             const { curtainAmount, cleaningAmount, totalAmount, totalCurtainPieces, totalBeltPieces } = useMemo(() => {
                 let curtainTotal = 0;
@@ -388,8 +399,6 @@
                     dispatch({ type: 'SET_CUSTOMER', payload: { apptDate: loginTimeStr } });
                     setPriceList(defaultPrices); 
                     showToast("Started New Job", 'success'); 
-                    setReadyToLoad(false);
-                    setTimeout(() => setReadyToLoad(true), 100);
                 } 
             };
             
@@ -398,14 +407,12 @@
             const isHandymanEmpty = !state.services.patchHoles && !state.services.handymanNotes;
             const boldLabelClass = "font-black text-slate-800 text-sm uppercase"; 
 
-            if (status === 'connecting') return <div className="flex items-center justify-center h-screen text-slate-500 flex-col gap-4"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div><p>Syncing...</p></div>;
-
             return (
                 <div className="min-h-screen pb-24 bg-slate-50">
                     <Toast show={toast.show} message={toast.message} type={toast.type} />
                     <nav className="bg-primary text-white px-4 py-3 shadow-lg sticky top-0 z-50 no-print transition-colors duration-300">
                         <div className="max-w-md mx-auto flex justify-between items-center">
-                            <div className="flex items-center gap-2"><div className="p-1.5 bg-white/20 rounded-lg"><Icons.CheckSquare /></div><div><span className="font-bold tracking-wide block leading-none">SiteCheck V25</span><div className="flex items-center gap-1 mt-1"><span className={`status-dot ${status === 'online' ? 'status-online' : 'status-offline'}`}></span><span className="text-[9px] uppercase font-bold opacity-80">{status === 'online' ? 'Online' : 'Offline'}</span></div></div></div>
+                            <div className="flex items-center gap-2"><div className="p-1.5 bg-white/20 rounded-lg"><Icons.CheckSquare /></div><div><span className="font-bold tracking-wide block leading-none">SiteCheck V25</span><div className="flex items-center gap-1 mt-1"><span className="status-dot status-online"></span><span className="text-[9px] uppercase font-bold opacity-80">Offline Mode</span></div></div></div>
                             <div className="flex gap-3"><button onClick={() => setIsSettingsOpen(true)} className="p-2 hover:bg-white/10 rounded-full"><Icons.Settings /></button><button onClick={handleReset} className="p-2 hover:bg-white/10 rounded-full"><Icons.Trash2 /></button><button type="button" onClick={handlePrint} className="p-2 bg-white text-primary rounded-full shadow-md"><Icons.Save /></button></div>
                         </div>
                     </nav>
@@ -469,7 +476,7 @@
                             <SectionTitle title="Room Assessment" />
                             <div className="space-y-5">
                                 {state.rooms.map((room) => <RoomCard key={room.id} room={room} dispatch={dispatch} />)}
-                                <button onClick={() => { const name = prompt("Enter Room Name:"); if (name) dispatch({ type: 'ADD_ROOM', payload: name }); }} className="w-full py-4 border-2 border-dashed border-primary/40 text-primary rounded-xl flex items-center justify-center gap-2 font-bold uppercase text-sm hover:bg-primaryLight no-print"><Icons.Plus /> Add Room</button>
+                                <button onClick={() => dispatch({ type: 'ADD_ROOM' })} className="w-full py-4 border-2 border-dashed border-primary/40 text-primary rounded-xl flex items-center justify-center gap-2 font-bold uppercase text-sm hover:bg-primaryLight no-print"><Icons.Plus /> Add Room</button>
                             </div>
                         </div>
 
@@ -479,11 +486,12 @@
                                 <CardHeader title="Site Condition" icon={<Icons.AppWindow />} />
                                 <div className="p-5 card-content">
                                     <div className="grid grid-cols-2 gap-4 no-print">
-                                        <InputGroup labelClass={boldLabelClass} label="Bedroom" type="number" value={state.services.bedroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bedroomsCount: e.target.value }})} />
-                                        <InputGroup labelClass={boldLabelClass} label="Bathroom" type="number" value={state.services.bathroomsCount} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { bathroomsCount: e.target.value }})} />
-                                        <InputGroup labelClass={boldLabelClass} label="Cupboards" value={state.services.cupboards} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { cupboards: e.target.value }})} />
+                                        <CounterInputGroup labelClass={boldLabelClass} label="Bedroom" value={state.services.bedroomsCount} onChange={val => dispatch({ type: 'SET_SERVICES', payload: { bedroomsCount: val }})} />
+                                        <CounterInputGroup labelClass={boldLabelClass} label="Bathroom" value={state.services.bathroomsCount} onChange={val => dispatch({ type: 'SET_SERVICES', payload: { bathroomsCount: val }})} />
+                                        <CounterInputGroup labelClass={boldLabelClass} label="Cupboards" value={state.services.cupboards} onChange={val => dispatch({ type: 'SET_SERVICES', payload: { cupboards: val }})} />
+                                        
                                         <InputGroup labelClass={boldLabelClass} label="Blinds" value={state.services.rollerBlinds} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { rollerBlinds: e.target.value }})} />
-                                        <InputGroup labelClass={boldLabelClass} label="Balconies" type="number" value={state.services.balconies} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { balconies: e.target.value }})} />
+                                        <InputGroup labelClass={boldLabelClass} label="Balconies" type="text" value={state.services.balconies} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { balconies: e.target.value }})} />
                                         <InputGroup labelClass={boldLabelClass} label="Kitchen" value={state.services.kitchenCondition} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { kitchenCondition: e.target.value }})} />
                                     </div>
                                     <div className="print-only flex flex-col gap-1">
@@ -499,7 +507,7 @@
                                     <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 mt-4 print:bg-transparent print:border-0 print:p-0">
                                         <div className="grid grid-cols-2 gap-4 print:block mb-4">
                                             <div className="no-print"><InputGroup label="Cleaners" labelClass="font-black text-slate-800 text-sm uppercase" type="number" step="0.5" value={state.services.neededCleaners} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { neededCleaners: e.target.value }})} /></div>
-                                            <div className="print-only mb-4 mt-2"><div className="border-2 border-slate-200 rounded-lg p-2 flex justify-between items-center bg-slate-50"><span className="text-xs font-black text-slate-800 uppercase">Manpower</span><span className="text-sm font-black text-slate-900">{state.services.neededCleaners ? `${state.services.neededCleaners} Cleaners` : '0 Cleaners'}</span></div></div>
+                                            <div className="print-only mb-4 mt-2"><div className="border-2 border-teal-200 rounded-lg p-2 flex justify-between items-center bg-teal-50 print-bg-green-light"><span className="text-xs font-black text-slate-800 uppercase">Manpower</span><span className="text-sm font-black text-slate-900">{state.services.neededCleaners ? `${state.services.neededCleaners} Cleaners` : '0 Cleaners'}</span></div></div>
                                             <div className="flex justify-between items-center border-t border-slate-300 pt-2 print:border-t print:border-slate-800"><label className="block text-xs font-black text-slate-800 uppercase">Est. Cleaning Cost</label><span className="text-lg font-black text-slate-800">${cleaningAmount.toFixed(2)}</span></div>
                                         </div>
                                         <div className={!state.services.others ? 'print-hidden-section' : ''}>
@@ -663,12 +671,8 @@
                         </div>
                         <div className={`p-3 bg-white card-content ${isExpanded ? 'block' : 'hidden print:block'}`}>
                             <div className="mb-2 pb-1 border-b border-slate-200 curtain-print-row flex items-center justify-between">
-                                <div className="w-auto max-w-[35%] sm:w-1/3"><span className="text-xs font-black text-black uppercase">Item</span></div>
-                                <div className="flex items-center justify-end gap-2 flex-1">
-                                    <div className="w-16 mr-2 print:mr-0 text-center"><span className="text-xs font-black text-black uppercase">Pleats</span></div>
-                                    <div className="w-24 print:w-auto text-center"><span className="text-xs font-black text-black uppercase">Qty</span></div>
-                                    <div className="w-6 no-print"></div>
-                                </div>
+                                <div className="w-auto max-w-[35%] sm:w-1/3 curtain-print-left"><span className="text-xs font-black text-black uppercase">Item</span></div>
+                                <div className="flex items-center justify-end gap-2 flex-1 curtain-print-right"><div className="print-pleats-col flex items-center justify-center w-16 mr-2 print:mr-0"><span className="text-xs font-black text-black uppercase text-center print-pleats-input">Pleats</span></div><div className="print-qty-col flex items-center justify-center gap-1 w-24 print:w-auto"><span className="text-xs font-black text-black uppercase text-center w-full print-qty-input">Qty</span></div><div className="w-6 no-print"></div></div>
                             </div>
                             {curtainTypes.map(type => {
                                 if (type === 'Roman Blinds' && !showRoman) return null;
@@ -701,19 +705,15 @@
             const screenClass = `flex items-center justify-between py-3 border-b border-slate-100 last:border-0 ${qty === 0 && !isPleatType ? 'print-hidden-section' : ''}`;
             return (
                 <div className={`${screenClass} curtain-print-row`}>
-                    <div className="flex items-center gap-2 w-auto max-w-[35%] sm:w-1/3">{showLabel ? <span className={`text-sm font-medium truncate ${isRoman || isPleatType ? 'text-primaryDark font-bold' : 'text-slate-700'}`}>{label}</span> : <div className="w-4"></div>}</div>
-                    <div className="flex items-center justify-end gap-2 flex-1">
-                        <div className={`flex items-center justify-center gap-1 w-16 mr-2 ${!isPleatType && !isRoman && !isBelt ? 'invisible' : ''} print:mr-0`}>
-                            {isRoman && (<div className="w-full flex justify-center"><div className="flex flex-col gap-1 w-[120px] -ml-12 no-print"><div className="flex items-center gap-1"><input type="number" value={romanDims.length} onChange={e => onChange({ ...data, romanDims: { ...romanDims, length: e.target.value } })} placeholder="L" className="w-full px-1 py-1 border border-slate-200 rounded text-xs text-center bg-slate-50" /><span className="text-slate-400 text-[9px]">x</span><input type="number" value={romanDims.height} onChange={e => onChange({ ...data, romanDims: { ...romanDims, height: e.target.value } })} placeholder="H" className="w-full px-1 py-1 border border-slate-200 rounded text-xs text-center bg-slate-50" /></div><select value={romanDims.unit} onChange={e => onChange({ ...data, romanDims: { ...romanDims, unit: e.target.value } })} className="text-[10px] py-0 border border-slate-200 rounded bg-slate-100 w-full text-center h-5"><option value="cm">cm</option><option value="in">in</option><option value="ft">ft</option><option value="m">m</option></select></div><div className="print-only text-xs font-bold text-slate-700 whitespace-nowrap">{romanDims.length || 0} x {romanDims.height || 0} {romanDims.unit}</div></div>)}
-                            {isPleatType && <input type="number" value={data.pleats || ''} onChange={e => onChange({ ...data, pleats: e.target.value })} placeholder="Plt" className="w-full px-1 py-1 text-center border border-slate-200 rounded text-sm bg-slate-50 print:border-0 print:bg-transparent print:font-bold" />}
-                            {isBelt && <input type="text" value="Pcs" disabled className="w-full px-1 py-1 text-center border bg-slate-50 text-slate-400 rounded text-xs print:hidden" />}
+                    <div className="flex items-center gap-2 w-auto max-w-[35%] sm:w-1/3 curtain-print-left">{showLabel ? <span className={`text-sm font-medium truncate ${isRoman || isPleatType ? 'text-primaryDark font-bold' : 'text-slate-700'}`}>{label}</span> : <div className="w-4"></div>}</div>
+                    <div className="flex items-center justify-end gap-2 flex-1 curtain-print-right">
+                        <div className={`print-pleats-col flex items-center justify-center gap-1 w-16 mr-2 ${!isPleatType && !isRoman && !isBelt ? 'invisible' : ''} print:mr-0`}>
+                            {isRoman && (<div className="w-full flex justify-center"><div className="flex flex-col gap-1 w-[120px] -ml-12 no-print"><div className="flex items-center gap-1"><input type="number" value={romanDims.length} onChange={e => onChange({ ...data, romanDims: { ...romanDims, length: e.target.value } })} placeholder="L" className="w-full px-1 py-1 border border-slate-200 rounded text-xs text-center bg-slate-50 focus:bg-white" /><span className="text-slate-400 text-[9px]">x</span><input type="number" value={romanDims.height} onChange={e => onChange({ ...data, romanDims: { ...romanDims, height: e.target.value } })} placeholder="H" className="w-full px-1 py-1 border border-slate-200 rounded text-xs text-center bg-slate-50 focus:bg-white" /></div><select value={romanDims.unit} onChange={e => onChange({ ...data, romanDims: { ...romanDims, unit: e.target.value } })} className="text-[10px] py-0 border border-slate-200 rounded bg-slate-100 w-full text-center h-5"><option value="cm">cm</option><option value="in">in</option><option value="ft">ft</option><option value="m">m</option></select></div><div className="print-only text-xs font-bold text-slate-700 whitespace-nowrap">{romanDims.length || 0} x {romanDims.height || 0} {romanDims.unit}</div></div>)}
+                            {isPleatType && <div className="relative w-full"><input type="number" value={data.pleats || ''} onChange={e => onChange({ ...data, pleats: e.target.value })} placeholder="Plt" className="w-full px-1 py-1 text-center border border-slate-200 rounded text-sm bg-slate-50 focus:bg-white print-pleats-input" /></div>}
+                            {isBelt && <div className="relative w-full"><input type="text" value="Pcs" disabled className="w-full px-1 py-1 text-center border bg-slate-50 text-slate-400 rounded text-xs" /></div>}
                         </div>
-                        <div className="flex items-center justify-center gap-1 w-24 print:w-auto">
-                            <button onClick={() => onChange({ ...data, qty: Math.max(0, (data.qty || 0) - 1) })} className="w-7 h-7 flex items-center justify-center rounded bg-slate-100 text-slate-600 no-print hover:bg-slate-200">-</button>
-                            <input type="number" value={data.qty || 0} onChange={e => onChange({ ...data, qty: parseInt(e.target.value) || 0 })} className="w-8 text-center py-1 border border-transparent rounded text-sm font-bold text-primaryDark print:w-full print:text-black" />
-                            <button onClick={() => onChange({ ...data, qty: (data.qty || 0) + 1 })} className="w-7 h-7 flex items-center justify-center rounded bg-primary text-white no-print hover:bg-primaryDark">+</button>
-                        </div>
-                        <div className="w-6 flex justify-center no-print">{(canDelete) && <button onClick={onDelete} className="text-slate-300 hover:text-red-500"><Icons.X /></button>}</div>
+                        <div className="print-qty-col flex items-center justify-center gap-1 w-24 print:w-auto print:ml-0"><button onClick={() => onChange({ ...data, qty: Math.max(0, (data.qty || 0) - 1) })} className="w-7 h-7 flex items-center justify-center rounded bg-slate-100 text-slate-600 no-print hover:bg-slate-200">-</button><div className="w-8 text-center print:w-full"><input type="number" value={data.qty || 0} onChange={e => onChange({ ...data, qty: parseInt(e.target.value) || 0 })} className="w-full text-center py-1 border border-transparent rounded text-sm font-bold text-primaryDark print-qty-input focus:bg-white focus:border-slate-200" /></div><button onClick={() => onChange({ ...data, qty: (data.qty || 0) + 1 })} className="w-7 h-7 flex items-center justify-center rounded bg-primary text-white no-print hover:bg-primaryDark">+</button></div>
+                        <div className="w-6 flex justify-center no-print">{(isPleatType && showLabel && canDelete) && <button onClick={onDelete} className="text-slate-300 hover:text-red-500"><Icons.X /></button>}{(isRoman) && <button onClick={onDelete} className="text-slate-300 hover:text-red-500"><Icons.X /></button>}{(!showLabel && canDelete && isPleatType) && <button onClick={onDelete} className="text-slate-300 hover:text-red-500"><Icons.X /></button>}</div>
                     </div>
                 </div>
             );
