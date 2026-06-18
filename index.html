@@ -6,9 +6,10 @@
     <title>Mrs. Sparkle - Site Assessment</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -77,9 +78,6 @@
             .print-force-show { display: block !important; visibility: visible !important; opacity: 1 !important; }
             .print-note-box { background-color: #fefce8 !important; border: 1px solid #eab308 !important; color: #000 !important; padding: 5px !important; border-radius: 4px !important; margin-top: 5px !important; }
             
-            /* Enhanced print utility for Manpower box */
-            .print-bg-green-light { background-color: #f0fdfa !important; border-color: #99f6e4 !important; }
-
             /* Ensure collapsed content shows in print */
             .print-show-always { display: block !important; height: auto !important; opacity: 1 !important; visibility: visible !important; overflow: visible !important; }
         }
@@ -248,17 +246,7 @@
                 case 'SET_CUSTOMER': return { ...state, customer: { ...state.customer, ...action.payload } };
                 case 'SET_SERVICES': return { ...state, services: { ...state.services, ...action.payload } };
                 case 'SET_SETTINGS': return { ...state, settings: { ...state.settings, ...action.payload } };
-                case 'ADD_ROOM': {
-                    let nextRoomNum = 1;
-                    while (state.rooms.some(r => r.name === `Room ${nextRoomNum}`)) {
-                        nextRoomNum++;
-                    }
-                    const roomName = `Room ${nextRoomNum}`;
-                    return { 
-                        ...state, 
-                        rooms: [...state.rooms, { id: Date.now(), name: roomName, notes: '', curtains: createEmptyCurtains() }] 
-                    };
-                }
+                case 'ADD_ROOM': return { ...state, rooms: [...state.rooms, { id: Date.now(), name: action.payload, notes: '', curtains: createEmptyCurtains() }] };
                 case 'DELETE_ROOM': return { ...state, rooms: state.rooms.filter(r => r.id !== action.payload) };
                 case 'UPDATE_SINGLE_CURTAIN_DATA': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.id ? { ...room, curtains: { ...room.curtains, [action.payload.type]: action.payload.newData } } : room )};
                 case 'ADD_PLEAT_ITEM': return { ...state, rooms: state.rooms.map(room => room.id === action.payload.roomId ? { ...room, curtains: { ...room.curtains, [action.payload.type]: [ ...room.curtains[action.payload.type], { id: Date.now(), pleats: '', qty: 0 } ] } } : room )};
@@ -476,7 +464,11 @@
                             <SectionTitle title="Room Assessment" />
                             <div className="space-y-5">
                                 {state.rooms.map((room) => <RoomCard key={room.id} room={room} dispatch={dispatch} />)}
-                                <button onClick={() => dispatch({ type: 'ADD_ROOM' })} className="w-full py-4 border-2 border-dashed border-primary/40 text-primary rounded-xl flex items-center justify-center gap-2 font-bold uppercase text-sm hover:bg-primaryLight no-print"><Icons.Plus /> Add Room</button>
+                                <button onClick={() => { 
+                                    const nextRoomNum = state.rooms.length + 1;
+                                    const name = prompt("Enter Room Name:", `Room ${nextRoomNum}`); 
+                                    if (name) dispatch({ type: 'ADD_ROOM', payload: name }); 
+                                }} className="w-full py-4 border-2 border-dashed border-primary/40 text-primary rounded-xl flex items-center justify-center gap-2 font-bold uppercase text-sm hover:bg-primaryLight no-print"><Icons.Plus /> Add Room</button>
                             </div>
                         </div>
 
@@ -507,7 +499,7 @@
                                     <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 mt-4 print:bg-transparent print:border-0 print:p-0">
                                         <div className="grid grid-cols-2 gap-4 print:block mb-4">
                                             <div className="no-print"><InputGroup label="Cleaners" labelClass="font-black text-slate-800 text-sm uppercase" type="number" step="0.5" value={state.services.neededCleaners} onChange={e => dispatch({ type: 'SET_SERVICES', payload: { neededCleaners: e.target.value }})} /></div>
-                                            <div className="print-only mb-4 mt-2"><div className="border-2 border-teal-200 rounded-lg p-2 flex justify-between items-center bg-teal-50 print-bg-green-light"><span className="text-xs font-black text-slate-800 uppercase">Manpower</span><span className="text-sm font-black text-slate-900">{state.services.neededCleaners ? `${state.services.neededCleaners} Cleaners` : '0 Cleaners'}</span></div></div>
+                                            <div className="print-only mb-4 mt-2"><div className="border-2 border-slate-200 rounded-lg p-2 flex justify-between items-center bg-slate-50"><span className="text-xs font-black text-slate-800 uppercase">Manpower</span><span className="text-sm font-black text-slate-900">{state.services.neededCleaners ? `${state.services.neededCleaners} Cleaners` : '0 Cleaners'}</span></div></div>
                                             <div className="flex justify-between items-center border-t border-slate-300 pt-2 print:border-t print:border-slate-800"><label className="block text-xs font-black text-slate-800 uppercase">Est. Cleaning Cost</label><span className="text-lg font-black text-slate-800">${cleaningAmount.toFixed(2)}</span></div>
                                         </div>
                                         <div className={!state.services.others ? 'print-hidden-section' : ''}>
